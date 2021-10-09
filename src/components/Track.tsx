@@ -20,7 +20,7 @@ export default function Track({ track }: { track: SimplifiedTopItem }) {
         </div>
         <div className="truncate">
           <h3 className="truncate text-md font-medium">{track.name}</h3>
-          <div className="text-sm subtext">{track.artists.string}</div>
+          <div className="truncate text-sm subtext">{track.artists.string}</div>
         </div>
       </div>
     </div>
