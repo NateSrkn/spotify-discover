@@ -27,6 +27,14 @@ export default function Artist({
       )}
       onClick={onClick}
     >
+      {isActive && (
+        <div
+          className="flex justify-center items-center absolute top-2 right-2 cursor-pointer h-6 w-6 hover:bg-green-custom rounded-full transition-all"
+          onClick={handleClose}
+        >
+          &#10005;
+        </div>
+      )}
       <div className="flex flex-row gap-4 items-center">
         <div className="overflow-hidden md:w-36 md:h-36 w-20 h-20 rounded-full shadow-md flex-shrink-0">
           {hasImage ? (
