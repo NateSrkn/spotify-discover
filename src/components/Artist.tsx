@@ -6,11 +6,13 @@ import ExpandableList from "./ExpandableList";
 export default function Artist({
   artist,
   onClick,
+  handleClose,
   isActive = false,
   expandedArtist,
 }: {
   artist: SimplifiedTopItem;
   onClick?: () => void;
+  handleClose?: () => void;
   isActive?: boolean;
   expandedArtist?: ExpandedArtist;
 }) {
@@ -20,17 +22,12 @@ export default function Artist({
       className={cx(
         "w-full bg-gray-200 dark:bg-green-custom  justify-self-start relative flex flex-col shadow-md rounded-sm dark:bg-opacity-10 hover:bg-opacity-75 transition-all p-4 group",
         {
-          "bg-transparent shadow-none": isActive,
           "cursor-pointer": !isActive,
         }
       )}
       onClick={onClick}
     >
-      <div
-        className={cx("flex flex-row gap-4 ", {
-          "items-center": !isActive,
-        })}
-      >
+      <div className="flex flex-row gap-4 items-center">
         <div className="overflow-hidden md:w-36 md:h-36 w-20 h-20 rounded-full shadow-md flex-shrink-0">
           {hasImage ? (
             <Image
@@ -44,7 +41,7 @@ export default function Artist({
             <div className="bg-gray-200 h-full w-full"></div>
           )}
         </div>
-        <div className={cx("transition-all", { "mt-auto": isActive })}>
+        <div>
           <h3
             className={cx("truncate text-md font-medium transition-all", {
               "text-xl font-bold": isActive,

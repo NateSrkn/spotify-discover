@@ -128,6 +128,7 @@ export default function Home({ session, topItems }: HomeProps) {
                 artist={item}
                 onClick={() => handleSelectArtist(item.id)}
                 isActive={selectedArtist?.artist?.id === item.id}
+                handleClose={() => setSelectedArtist({})}
                 expandedArtist={selectedArtist}
               />
             )
