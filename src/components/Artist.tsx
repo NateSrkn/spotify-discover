@@ -38,7 +38,7 @@ const Artist = ({
                 "overflow-hidden rounded-full shadow-md flex-shrink-0 transition-all",
                 {
                   "md:w-32 md:h-32 w-20 h-20": isActive,
-                  "md:w-28 md:h-28 w-20 h-20 ": !isActive,
+                  "md:w-28 md:h-28 w-20 h-20": !isActive,
                 }
               )}
             >

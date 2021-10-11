@@ -21,7 +21,6 @@ const Select = ({ options, onClick, defaultValue }) => {
     <div
       className="relative text-base sm:text-lg"
       onBlur={() => setTimeout(toggleOpen, 100)}
-      onTouchCancel={() => setTimeout(toggleOpen, 100)}
     >
       <button
         onClick={toggleOpen}
