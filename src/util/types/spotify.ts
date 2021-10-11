@@ -307,8 +307,12 @@ export interface Disallows {
 export type ReleasePrecision = "year" | "month" | "day";
 
 export interface ExpandedArtist {
-  artist: Artist;
+  artist: SimplifiedTopItem;
   related_artists: Artist[];
   top_tracks: Track[];
-  albums: SimplifiedAlbumObject[];
+  collection: {
+    album?: SimplifiedAlbumObject[];
+    single?: SimplifiedAlbumObject[];
+    compilation?: SimplifiedAlbumObject[];
+  };
 }

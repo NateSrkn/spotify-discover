@@ -39,9 +39,8 @@ export const useArtist = (
       return data;
     },
     {
-      placeholderData: { data: {} },
       staleTime: Infinity,
-      enabled: id !== undefined,
+      enabled: false,
     }
   );
 };
@@ -66,4 +65,8 @@ export const prefetchArtist = async (id: string) => {
     );
   }
   return value;
+};
+
+export const checkForData = (key) => {
+  return queryClient.getQueryData(key);
 };

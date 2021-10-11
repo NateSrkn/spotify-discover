@@ -1,13 +1,18 @@
 import { request } from "./api";
 import { Session } from "next-auth";
-import { Artist, Track, SimplifiedAlbumObject } from "./types/spotify";
+import {
+  Artist,
+  Track,
+  SimplifiedAlbumObject,
+  SimplifiedTopItem,
+} from "./types/spotify";
 import { sanitizeObject } from "./helpers";
+
 const TOKEN_ENDPOINT = `https://accounts.spotify.com/api/token`;
 const client_id = process.env.NEXT_PUBLIC_CLIENT_ID;
 const client_secret = process.env.NEXT_PUBLIC_CLIENT_SECRET;
 const redirect_uri = process.env.NEXT_PUBLIC_REDIRECT_URI;
 const auth = Buffer.from(`${client_id}:${client_secret}`).toString("base64");
-
 export async function refreshToken(token) {
   try {
     const response = await fetch(TOKEN_ENDPOINT, {
@@ -89,12 +94,9 @@ const buildArtistRequests = (artist_id) => {
   const requests = ["", "related-artists", "top-tracks", "albums"];
 
   return requests.map((request) => {
-    const params: { [key: string]: any } = {};
-    if (["top-tracks", "albums"].includes(request)) {
+    let params: { [key: string]: any } = {};
+    if (["top-tracks"].includes(request)) {
       params.market = "from_token";
-      if (request === "albums") {
-        params.country = "from_token";
-      }
     }
     return {
       url: `${base}/${artist_id}/${request}`,
@@ -115,10 +117,30 @@ export const getArtistData = async (artist_id, session) => {
     requests
   );
   return {
-    artist: artist.data as Artist,
+    artist: {
+      name: artist.data.name,
+      id: artist.data.id,
+      type: artist.data.type,
+      href: artist.data.external_urls.spotify,
+      followers: artist.data.followers.total,
+      genres: {
+        string: artist.data.genres.join(", "),
+        array: artist.data.genres,
+      },
+      images: artist.data.images,
+      popularity: artist.data.popularity,
+    } as SimplifiedTopItem,
     related_artists: related_artists.data.artists as Artist[],
     top_tracks: top_tracks.data.tracks as Track[],
-    albums: albums.data.items as SimplifiedAlbumObject[],
+    collection: albums.data.items
+      .filter(({ available_markets }) => available_markets.includes("US"))
+      .reduce((acc, album) => {
+        if (!acc[album.album_type]) {
+          acc[album.album_type] = [];
+        }
+        acc[album.album_type].push(album);
+        return acc;
+      }, {}),
   };
 };
 
