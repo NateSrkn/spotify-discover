@@ -18,10 +18,14 @@ const Select = ({ options, onClick, defaultValue }) => {
     setIsOpen(!isOpen);
   };
   return (
-    <div className="relative" onBlur={() => setTimeout(toggleOpen, 100)}>
+    <div
+      className="relative text-base sm:text-lg"
+      onBlur={() => setTimeout(toggleOpen, 100)}
+      onTouchCancel={() => setTimeout(toggleOpen, 100)}
+    >
       <button
         onClick={toggleOpen}
-        className="bg-gray-200 dark:bg-faded-green p-2 rounded-md text-lg font-medium"
+        className="bg-gray-200 dark:bg-faded-green p-2 rounded-md  font-medium"
       >
         <span className="flex gap-2 items-center">
           {selected.label}{" "}
@@ -29,7 +33,7 @@ const Select = ({ options, onClick, defaultValue }) => {
         </span>
       </button>
       {isOpen && (
-        <div className="absolute top-full z-50 bg-gray-200 dark:bg-faded-green p-2 text-lg w-max rounded-md mt-2 shadow-lg flex flex-col items-start">
+        <div className="absolute top-full z-50 bg-gray-200 dark:bg-faded-green p-2 w-max rounded-md mt-2 shadow-lg flex flex-col items-start">
           {options
             .filter((option) => option.value !== selected.value)
             .map((option) => (
@@ -43,23 +47,6 @@ const Select = ({ options, onClick, defaultValue }) => {
             ))}
         </div>
       )}
-
-      {/* <select
-      className="appearance-none flex flex-col relative bg-green-custom bg-opacity-20 text-xl px-3 py-2 rounded-md font-medium cursor-pointer"
-      onChange={onChange}
-    >
-      {options
-        .filter((option) => (selected ? option.value !== selected.value : true))
-        .map((option) => (
-          <option
-            key={option.value}
-            value={option.value}
-            className="appearance-none"
-          >
-            {option.label}
-          </option>
-        ))}
-    </select> */}
     </div>
   );
 };
