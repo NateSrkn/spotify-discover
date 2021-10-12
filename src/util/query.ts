@@ -24,7 +24,9 @@ export const useNowPlaying = (): UseQueryResult<
 };
 
 export const useArtist = (
-  id?: string | undefined
+  id?: string | undefined,
+  placeholderData?: Partial<ExpandedArtist>,
+  isEnabled?: boolean
 ): UseQueryResult<ExpandedArtist> => {
   return useQuery(
     ["artist", id],
@@ -39,8 +41,10 @@ export const useArtist = (
       return data;
     },
     {
+      placeholderData,
       staleTime: Infinity,
-      enabled: false,
+      cacheTime: Infinity,
+      enabled: isEnabled,
     }
   );
 };
