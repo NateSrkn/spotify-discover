@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Image from "./Image";
 import { MouseFollower } from "./MouseFollower";
 import cx from "classnames";
-const Breadcrumb = ({ crumb, isActive, onClick }) => {
+const Breadcrumb = ({ crumb, isActive, onClick = null }) => {
   const [isShowing, setIsShowing] = useState(false);
 
   return (

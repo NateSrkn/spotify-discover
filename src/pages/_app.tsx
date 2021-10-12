@@ -1,6 +1,5 @@
 import { AppProps } from "next/dist/shared/lib/router/router";
 import { QueryClientProvider, QueryClient } from "react-query";
-import { ReactQueryDevtools } from "react-query/devtools";
 import { ThemeProvider } from "next-themes";
 import "../styles/globals.scss";
 import Layout from "../components/Layout";
@@ -16,7 +15,6 @@ function MyApp({ Component, pageProps }: AppProps) {
             <Component {...pageProps} />
           </Layout>
         </MouseTracker>
-        <ReactQueryDevtools initialIsOpen={false} />
       </ThemeProvider>
     </QueryClientProvider>
   );
