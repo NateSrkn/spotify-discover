@@ -7,7 +7,7 @@ export default function LoginPage() {
         <h4 className="text-2xl font-bold">Welcome to Crumbs</h4>
         <div className="text-lg font-medium">
           <p className="mb-4">
-            Crumbs is a simple, and fast way for you discover music based on
+            Crumbs is a simple, and fast way for you to discover music based on
             what you already like.
           </p>
         </div>

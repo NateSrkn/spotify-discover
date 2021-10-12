@@ -5,7 +5,7 @@ export const Layout = ({ children, session = null, ...customMeta }) => {
   const meta = {
     title: "Crumbs",
     description:
-      "Crumbs is a simple, and fast way for you discover music based on what you already like.",
+      "Crumbs is a simple, and fast way for you to discover music based on what you already like.",
     type: "website",
     ...customMeta,
   };
