@@ -1,20 +1,15 @@
-import React, { useState } from "react";
+import React from "react";
 import Image from "./Image";
-import { MouseFollower } from "./MouseFollower";
 import cx from "classnames";
 const Breadcrumb = ({ crumb, isActive, onClick = null }) => {
-  const [isShowing, setIsShowing] = useState(false);
-
   return (
-    <div>
+    <div className="relative group">
       <div
         className={cx("img-wrapper is-rounded xs", {
           "border-2 dark:border-white border-black": isActive,
           "cursor-pointer": onClick,
         })}
         key={crumb.id}
-        onMouseEnter={() => setIsShowing(true)}
-        onMouseLeave={() => setIsShowing(false)}
         onClick={onClick ?? null}
       >
         <Image
@@ -24,13 +19,9 @@ const Breadcrumb = ({ crumb, isActive, onClick = null }) => {
           alt={crumb.name}
         />
       </div>
-      {isShowing && (
-        <MouseFollower offset={{ x: -50, y: 35 }}>
-          <button className="bg-gray-200 dark:bg-faded-green p-2 rounded-md z-50 text-xs drop-shadow-lg">
-            {crumb.name}
-          </button>
-        </MouseFollower>
-      )}
+      <div className="hidden sm:invisible sm:block group-hover:visible absolute bottom-12 w-max shadow-lg z-50 drop-shadow-2xl bg-gray-200 dark:bg-faded-green px-2 py-1 rounded-md">
+        <span className="text-xs">{crumb.name}</span>
+      </div>
     </div>
   );
 };

@@ -31,8 +31,6 @@ const Artist = ({
   );
   const [breadCrumbs, setBreadCrumbs] = useState([baseArtist]);
   const handleClick = isActive ? handleClose : onClick;
-  const isBreadcrumbActive = (item: SimplifiedTopItem) =>
-    item.id !== baseArtist.id;
   const handleAddBreadcrumb = (item) => {
     if (breadCrumbs.some((i) => i.id === item.id)) return;
     setBreadCrumbs([...breadCrumbs, item]);
