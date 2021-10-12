@@ -6,7 +6,7 @@ export default function ImageComponent({ src, alt, height, width }) {
       alt={alt}
       height={height}
       width={width}
-      className="object-cover"
+      className="object-cover h-auto max-w-full"
     />
   ) : (
     <div className="filler-img">{pullInitials(alt)}</div>

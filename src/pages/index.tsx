@@ -6,12 +6,7 @@ import { getTopItems } from "../util/spotify";
 import { options as optionsAtom } from "../util/store";
 import { SimplifiedTopItem } from "../util/types/spotify";
 import { GetServerSideProps } from "next";
-import {
-  useNowPlaying,
-  prefetchArtist,
-  useArtist,
-  checkForData,
-} from "../util/query";
+import { useNowPlaying, prefetchArtist } from "../util/query";
 import NowPlaying from "../components/NowPlaying";
 import { useAtom } from "jotai";
 import React, { useState } from "react";
@@ -20,6 +15,7 @@ import Track from "../components/Track";
 import Button from "../components/Button";
 import Select from "../components/Select";
 import { toUppercase } from "../util/helpers";
+import { DarkModeToggle } from "../components/DarkModeToggle";
 
 interface HomeProps {
   session: Session;
@@ -28,9 +24,9 @@ interface HomeProps {
 export default function Home({ session, topItems }: HomeProps) {
   const [options, setOptions] = useAtom(optionsAtom);
   const [activeArtist, setActiveArtist] = useState(null);
+
   const current_selection = topItems[options.type][options.termLength];
   const { data: nowPlaying } = useNowPlaying();
-  const artistQuery = useArtist(activeArtist);
 
   const types = ["tracks", "artists"];
 
@@ -57,21 +53,24 @@ export default function Home({ session, topItems }: HomeProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="flex flex-col my-4">
-        <div className="flex gap-4 items-center">
-          <div className="overflow-hidden h-16 w-16 rounded-full">
-            <Image
-              src={session.user.image}
-              alt={session.user.name}
-              width={100}
-              height={100}
-            />
+        <div className="flex items-start justify-between">
+          <div className="flex gap-4 items-center">
+            <div className="overflow-hidden h-16 w-16 rounded-full">
+              <Image
+                src={session.user.image}
+                alt={session.user.name}
+                width={100}
+                height={100}
+              />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold">{session.user.name}</h3>
+              <Button onClick={() => signOut()}>
+                <span className="text-xs">Sign Out</span>
+              </Button>
+            </div>
           </div>
-          <div>
-            <h3 className="text-xl font-bold">{session.user.name}</h3>
-            <Button onClick={() => signOut()}>
-              <span className="text-xs">Sign Out</span>
-            </Button>
-          </div>
+          <DarkModeToggle />
         </div>
         <div className="my-4">
           <NowPlaying />
@@ -106,15 +105,14 @@ export default function Home({ session, topItems }: HomeProps) {
           if (item.type === "track") {
             return <Track track={item} key={item.id} />;
           }
-          const isActive =
-            !artistQuery.isLoading &&
-            checkForData(["artist", item.id]) &&
-            item.id === activeArtist;
+          const isActive = item.id === activeArtist;
           return (
             <Artist
               key={item.id}
-              data={isActive ? artistQuery.data : { artist: item }}
-              onMouseEnter={async () => await prefetchArtist(item.id)}
+              baseArtist={item}
+              onMouseEnter={() =>
+                setTimeout(() => prefetchArtist(item.id), 500)
+              }
               onClick={() => setActiveArtist(item.id)}
               isActive={isActive}
               handleClose={() => setActiveArtist(null)}

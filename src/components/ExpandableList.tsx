@@ -9,6 +9,7 @@ export const ListItem = ({
   description,
   isRow,
   onClick,
+  onMouseEnter,
 }: {
   image: {
     url: string;
@@ -21,6 +22,7 @@ export const ListItem = ({
   description: string;
   isRow?: boolean;
   onClick?: () => void;
+  onMouseEnter?: () => void;
 }) => {
   return (
     <li
@@ -30,6 +32,8 @@ export const ListItem = ({
         "my-3": !onClick,
       })}
       title={description}
+      onMouseEnter={onMouseEnter ?? null}
+      onClick={onClick ?? null}
     >
       <div
         className={cx("flex gap-4", {
@@ -80,20 +84,17 @@ const ExpandableList = ({
         >
           {children?.slice(0, listSize).map((item) => item)}
         </ul>
-        {isExpanded ? (
-          <Button onClick={() => setIsExpanded(false)}>
+        {!isShort && (
+          <Button onClick={() => setIsExpanded(!isExpanded)}>
             <div className="flex items-end gap-2">
-              See Less <FiChevronUp size={17} />
+              See {isExpanded ? "Less" : "More"}{" "}
+              {isExpanded ? (
+                <FiChevronUp size={17} />
+              ) : (
+                <FiChevronDown size={17} />
+              )}
             </div>
           </Button>
-        ) : (
-          !isShort && (
-            <Button onClick={() => setIsExpanded(true)}>
-              <div className="flex items-end gap-2">
-                See More <FiChevronDown size={17} />
-              </div>
-            </Button>
-          )
         )}
       </div>
     );

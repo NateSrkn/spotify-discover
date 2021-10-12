@@ -68,3 +68,12 @@ ul {
 .card-sm-text {
   @apply font-medium truncate text-sm;
 }
+
+.mouse-follower {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  transform: all 0.2s;
+  pointer-events: none;
+}
