@@ -171,6 +171,7 @@ export const getTopItems = async (
       album: isTrack ? item.album.name : undefined,
       popularity: item.popularity,
       followers: isTrack ? undefined : item.followers.total,
+      preview_url: isTrack ? item.preview_url : undefined,
       type: item.type,
       genres: isTrack
         ? undefined
