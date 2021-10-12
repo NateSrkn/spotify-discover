@@ -1,16 +1,8 @@
 import { SimplifiedTopItem } from "../util/types/spotify";
-import Image from "./Image";
-export default function Track({
-  track,
-  onClick,
-}: {
-  track: SimplifiedTopItem;
-}) {
+import { Image } from ".";
+export const Track = ({ track }: { track: SimplifiedTopItem }) => {
   return (
-    <div
-      className="w-full bg-green-custom  justify-self-start relative flex flex-col shadow-md rounded-md bg-opacity-10 p-5"
-      onClick={onClick}
-    >
+    <div className="w-full bg-green-custom  justify-self-start relative flex flex-col shadow-md rounded-md bg-opacity-10 p-5">
       <div className="flex flex-row items-center gap-4">
         <div className="md:w-28 md:h-28 w-20 h-20 shadow-md flex-shrink-0">
           <Image
@@ -27,4 +19,4 @@ export default function Track({
       </div>
     </div>
   );
-}
+};

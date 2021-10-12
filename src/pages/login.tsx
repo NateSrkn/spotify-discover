@@ -1,18 +1,19 @@
 import { signIn, getSession } from "next-auth/client";
+import { Button, Layout } from "../components";
 export default function LoginPage() {
   return (
-    <div className="h-screen flex justify-center flex-col gap-2">
-      <h4 className="text-2xl font-bold">Welcome to Spotify Discovery</h4>
-      <div className="text-lg font-medium">
-        Very much so a work in progress, proceed with caution.
+    <Layout>
+      <div className="h-screen flex justify-center flex-col gap-2">
+        <h4 className="text-2xl font-bold">Welcome to Crumbs</h4>
+        <div className="text-lg font-medium">
+          <p className="mb-4">
+            Crumbs is a simple, and fast way for you discover music based on
+            what you already like.
+          </p>
+        </div>
+        <Button onClick={() => signIn("spotify")}>Sign in</Button>
       </div>
-      <a
-        onClick={() => signIn("spotify")}
-        className="hover:underline inline-flex w-max cursor-pointer"
-      >
-        Sign in
-      </a>
-    </div>
+    </Layout>
   );
 }
 

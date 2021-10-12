@@ -1,14 +1,12 @@
 import { useEffect } from "react";
 import { SimplifiedTopItem } from "../util/types/spotify";
-import Image from "../components/Image";
+import { Image, ListItem, ExpandableList, Breadcrumb } from ".";
 import cx from "classnames";
-import ExpandableList, { ListItem } from "./ExpandableList";
 import React, { useState } from "react";
-import Breadcrumb from "./Breadcrumb";
-import { prefetchArtist, useArtist } from "../util/query";
+import { prefetchArtist, useArtist } from "../hooks";
 import { AnimatePresence, motion } from "framer-motion";
-
-const Artist = ({
+import { useQueryClient } from "react-query";
+export const Artist = ({
   baseArtist,
   onMouseEnter,
   onClick,
@@ -21,14 +19,14 @@ const Artist = ({
   handleClose: () => void;
   isActive?: boolean;
 }) => {
+  const queryClient = useQueryClient();
   const [activeBreadcrumb, setActiveBreadcrumb] = useState(baseArtist);
-  const { data, isFetched } = useArtist(
-    activeBreadcrumb.id,
-    {
-      artist: activeBreadcrumb,
-    },
-    isActive
-  );
+  const { data, isFetched } = useArtist({
+    id: activeBreadcrumb.id,
+    placeholderData: { artist: baseArtist },
+    isEnabled: isActive,
+  });
+
   const [breadCrumbs, setBreadCrumbs] = useState([baseArtist]);
   const handleClick = isActive ? handleClose : onClick;
   const handleAddBreadcrumb = (item) => {
@@ -219,7 +217,7 @@ const Artist = ({
                           }}
                           onMouseEnter={() =>
                             setTimeout(() => {
-                              prefetchArtist(artist.id);
+                              prefetchArtist(queryClient, artist.id);
                             }, 500)
                           }
                           onClick={() =>
@@ -238,5 +236,3 @@ const Artist = ({
     </React.Fragment>
   );
 };
-
-export default Artist;

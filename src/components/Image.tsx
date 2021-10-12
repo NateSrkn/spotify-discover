@@ -1,5 +1,5 @@
 import { pullInitials } from "../util/helpers";
-export default function ImageComponent({ src, alt, height, width }) {
+export const Image = ({ src, alt, height, width }) => {
   return src ? (
     <img
       src={src}
@@ -11,4 +11,4 @@ export default function ImageComponent({ src, alt, height, width }) {
   ) : (
     <div className="filler-img">{pullInitials(alt)}</div>
   );
-}
+};

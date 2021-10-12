@@ -1,7 +1,7 @@
 import React from "react";
-import Image from "./Image";
+import { Image } from ".";
 import cx from "classnames";
-const Breadcrumb = ({ crumb, isActive, onClick = null }) => {
+export const Breadcrumb = ({ crumb, isActive, onClick = null }) => {
   return (
     <div className="relative group">
       <div
@@ -25,5 +25,3 @@ const Breadcrumb = ({ crumb, isActive, onClick = null }) => {
     </div>
   );
 };
-
-export default Breadcrumb;

@@ -5,7 +5,7 @@ interface SelectProps {
   onChange: (value: string) => void;
   defaultValue?: { label: string; value: string };
 }
-const Select = ({ options, onClick, defaultValue }) => {
+export const Select = ({ options, onClick, defaultValue }) => {
   const [selected, setSelected] = useState(defaultValue);
   const [isOpen, setIsOpen] = useState(false);
   const handleClick = (option) => {
@@ -49,5 +49,3 @@ const Select = ({ options, onClick, defaultValue }) => {
     </div>
   );
 };
-
-export default Select;

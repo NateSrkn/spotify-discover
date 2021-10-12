@@ -1,11 +1,7 @@
 import { request } from "./api";
 import { Session } from "next-auth";
-import {
-  Artist,
-  Track,
-  SimplifiedAlbumObject,
-  SimplifiedTopItem,
-} from "./types/spotify";
+
+import { Artist, Track, SimplifiedTopItem } from "./types/spotify";
 import { sanitizeObject } from "./helpers";
 
 const TOKEN_ENDPOINT = `https://accounts.spotify.com/api/token`;

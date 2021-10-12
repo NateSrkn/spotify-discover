@@ -1,18 +1,18 @@
+import { useState } from "react";
 import { AppProps } from "next/dist/shared/lib/router/router";
-import { QueryClientProvider, QueryClient } from "react-query";
+import { QueryClientProvider, QueryClient, Hydrate } from "react-query";
 import { ThemeProvider } from "next-themes";
 import "../styles/globals.scss";
-import Layout from "../components/Layout";
 
-export const queryClient = new QueryClient();
 function MyApp({ Component, pageProps }: AppProps) {
+  const [queryClient] = useState(new QueryClient());
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class">
-        <Layout>
+      <Hydrate state={pageProps.dehydratedState}>
+        <ThemeProvider attribute="class">
           <Component {...pageProps} />
-        </Layout>
-      </ThemeProvider>
+        </ThemeProvider>
+      </Hydrate>
     </QueryClientProvider>
   );
 }

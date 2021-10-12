@@ -3,10 +3,10 @@ interface IButton {
   onClick: () => void;
 }
 
-export default function Button({ children, onClick }: IButton) {
+export const Button = ({ children, onClick }: IButton) => {
   return (
-    <button className="button background-hover" onClick={onClick}>
+    <button className="button background-hover w-max" onClick={onClick}>
       {children}
     </button>
   );
-}
+};

@@ -1,7 +1,6 @@
 import { useState } from "react";
-import Image from "./Image";
+import { Image, Button } from ".";
 import cx from "classnames";
-import Button from "./Button";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 
 export const ListItem = ({
@@ -59,7 +58,7 @@ export const ListItem = ({
   );
 };
 
-const ExpandableList = ({
+export const ExpandableList = ({
   title,
   children,
   startingLength = 5,
@@ -101,5 +100,3 @@ const ExpandableList = ({
   }
   return null;
 };
-
-export default ExpandableList;

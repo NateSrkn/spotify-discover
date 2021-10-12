@@ -1,7 +1,7 @@
 import React from "react";
-import { useNowPlaying } from "../util/query";
+import { useNowPlaying } from "../hooks";
 
-export default function NowPlaying() {
+export const NowPlaying = () => {
   const { data: nowPlaying } = useNowPlaying();
   return (
     <div className="flex flex-row-reverse sm:flex-row mb-8 space-x-0 sm:space-x-2 w-full">
@@ -40,4 +40,4 @@ export default function NowPlaying() {
       </div>
     </div>
   );
-}
+};

@@ -1,35 +1,29 @@
-import Head from "next/head";
-import Image from "../components/Image";
 import { Session } from "next-auth";
-import { getSession, signOut } from "next-auth/client";
-import { getTopItems } from "../util/spotify";
+import { getSession } from "next-auth/client";
 import { options as optionsAtom } from "../util/store";
-import { SimplifiedTopItem } from "../util/types/spotify";
 import { GetServerSideProps } from "next";
-import { useNowPlaying, prefetchArtist } from "../util/query";
-import NowPlaying from "../components/NowPlaying";
+
 import { useAtom } from "jotai";
 import React, { useState } from "react";
-import Artist from "../components/Artist";
-import Track from "../components/Track";
-import Button from "../components/Button";
-import Select from "../components/Select";
 import { toUppercase } from "../util/helpers";
-import { DarkModeToggle } from "../components/DarkModeToggle";
-
+import { useQueryClient, QueryClient, dehydrate } from "react-query";
+import { useTopItems, prefetchArtist, useNowPlaying } from "../hooks";
+import { Artist, Track, Select, Layout } from "../components";
+import { getNowPlaying, getTopItems } from "../util/spotify";
 interface HomeProps {
   session: Session;
-  topItems: TopItems;
 }
-export default function Home({ session, topItems }: HomeProps) {
+export default function Home({ session }: HomeProps) {
+  const queryClient = useQueryClient();
   const [options, setOptions] = useAtom(optionsAtom);
   const [activeArtist, setActiveArtist] = useState(null);
-
-  const current_selection = topItems[options.type][options.termLength];
+  const { data: current_selection, isFetched } = useTopItems(
+    options.type,
+    options.termLength
+  );
   const { data: nowPlaying } = useNowPlaying();
 
   const types = ["tracks", "artists"];
-
   const titles = {
     long_term: "All Time",
     medium_term: "Last 6 Months",
@@ -43,40 +37,13 @@ export default function Home({ session, topItems }: HomeProps) {
   };
 
   return (
-    <div>
-      <Head>
-        <title>
-          {toUppercase(types.find((type) => type === options.type))}{" "}
-          {nowPlaying.isListening ? `| ${nowPlaying.compact}` : ""}
-        </title>
-        <meta name="description" content="Spotify Discovery" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <div className="flex flex-col my-4">
-        <div className="flex items-start justify-between">
-          <div className="flex gap-4 items-center">
-            <div className="overflow-hidden h-16 w-16 rounded-full">
-              <Image
-                src={session.user.image}
-                alt={session.user.name}
-                width={100}
-                height={100}
-              />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold">{session.user.name}</h3>
-              <Button onClick={() => signOut()}>
-                <span className="text-xs">Sign Out</span>
-              </Button>
-            </div>
-          </div>
-          <DarkModeToggle />
-        </div>
-        <div className="my-4">
-          <NowPlaying />
-        </div>
-      </div>
-      <div className="flex border-b border-green-custom pb-2 mb-4 items-baseline flex-wrap gap-2">
+    <Layout
+      session={session}
+      title={`${toUppercase(types.find((type) => type === options.type))} ${
+        nowPlaying.isListening ? `| ${nowPlaying.compact}` : ""
+      }`}
+    >
+      <div className="flex items-baseline flex-wrap gap-2">
         <Select
           options={types.map((value) => ({
             value,
@@ -100,27 +67,29 @@ export default function Home({ session, topItems }: HomeProps) {
           onClick={(value) => handleSetOptions("termLength", value)}
         />
       </div>
+      <hr className="w-full border-1 border-green-custom mt-2 mb-4" />
       <ul className="flex flex-col gap-4">
-        {current_selection.map((item) => {
-          if (item.type === "track") {
-            return <Track track={item} key={item.id} />;
-          }
-          const isActive = item.id === activeArtist;
-          return (
-            <Artist
-              key={item.id}
-              baseArtist={item}
-              onMouseEnter={() =>
-                setTimeout(() => prefetchArtist(item.id), 500)
-              }
-              onClick={() => setActiveArtist(item.id)}
-              isActive={isActive}
-              handleClose={() => setActiveArtist(null)}
-            />
-          );
-        })}
+        {isFetched &&
+          current_selection.items.map((item) => {
+            if (item.type === "track") {
+              return <Track track={item} key={item.id} />;
+            }
+            const isActive = item.id === activeArtist;
+            return (
+              <Artist
+                key={item.id}
+                baseArtist={item}
+                onMouseEnter={() =>
+                  setTimeout(() => prefetchArtist(queryClient, item.id), 500)
+                }
+                onClick={() => setActiveArtist(item.id)}
+                isActive={isActive}
+                handleClose={() => setActiveArtist(null)}
+              />
+            );
+          })}
       </ul>
-    </div>
+    </Layout>
   );
 }
 
@@ -134,30 +103,23 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
       },
     };
   }
-  const types: TypesList = ["artists", "tracks"];
-  const termLengths: TermLengths = ["short_term", "medium_term", "long_term"];
-  const topItems = {};
-  for (let i = 0; i < types.length; i++) {
-    const type = types[i];
-    topItems[type] = {};
-    for (let j = 0; j < termLengths.length; j++) {
-      const time_range = termLengths[j];
-      const data = await getTopItems({ type, time_range }, session);
-      topItems[type][time_range] = data.items;
-    }
-  }
+  const queryClient = new QueryClient();
+  const queryConfig = {
+    staleTime: Infinity,
+    cacheTime: Infinity,
+  };
+  await queryClient.prefetchQuery("nowPlaying", () => getNowPlaying(session));
+  await queryClient.prefetchQuery(
+    ["artists", "short_term"],
+    () => getTopItems({ type: "artists", time_range: "short_term" }, session),
+    queryConfig
+  );
+  await queryClient.prefetchQuery(
+    ["tracks", "short_term"],
+    () => getTopItems({ type: "tracks", time_range: "short_term" }, session),
+    queryConfig
+  );
   return {
-    props: { session, topItems },
-  };
-};
-
-export type TermLengths = ["short_term", "medium_term", "long_term"];
-export type TypesList = ["artists", "tracks"];
-type TopItems = {
-  artists?: {
-    [key in TermLengths[number]]?: SimplifiedTopItem[];
-  };
-  tracks?: {
-    [key in TermLengths[number]]?: SimplifiedTopItem[];
+    props: { session, dehydratedState: dehydrate(queryClient) },
   };
 };
