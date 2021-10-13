@@ -20,8 +20,16 @@ export const useArtist = ({ id, isEnabled, placeholderData }) =>
   );
 
 export const prefetchArtist = (client, id: string) => {
-  client.prefetchQuery(["artist", id], async () => {
-    const { data } = await getArtist(id);
-    return data;
-  });
+  if (client.getQueryData(["artist", id])) return;
+  client.prefetchQuery(
+    ["artist", id],
+    async () => {
+      const { data } = await getArtist(id);
+      return data;
+    },
+    {
+      staleTime: Infinity,
+      cacheTime: Infinity,
+    }
+  );
 };

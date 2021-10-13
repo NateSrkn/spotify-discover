@@ -15,6 +15,7 @@ interface HomeProps {
 }
 export default function Home({ session }: HomeProps) {
   const queryClient = useQueryClient();
+  const [timeout, updateTimeout] = useState<typeof setTimeout | null>();
   const [options, setOptions] = useAtom(optionsAtom);
   const [activeArtist, setActiveArtist] = useState(null);
   const { data: current_selection, isFetched } = useTopItems(
@@ -80,8 +81,16 @@ export default function Home({ session }: HomeProps) {
                 key={item.id}
                 baseArtist={item}
                 onMouseEnter={() =>
-                  setTimeout(() => prefetchArtist(queryClient, item.id), 500)
+                  updateTimeout(
+                    setTimeout(() => {
+                      prefetchArtist(queryClient, item.id);
+                    }, 500)
+                  )
                 }
+                onMouseLeave={() => {
+                  clearTimeout(timeout);
+                  setTimeout(null);
+                }}
                 onClick={() => setActiveArtist(item.id)}
                 isActive={isActive}
                 handleClose={() => setActiveArtist(null)}

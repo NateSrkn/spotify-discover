@@ -1,29 +1,34 @@
 import { useEffect } from "react";
 import { SimplifiedTopItem } from "../util/types/spotify";
-import { Image, ListItem, ExpandableList, Breadcrumb } from ".";
+import { Image, ListItem, ExpandableList, Breadcrumb, Button } from ".";
 import cx from "classnames";
 import React, { useState } from "react";
 import { prefetchArtist, useArtist } from "../hooks";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQueryClient } from "react-query";
+
 export const Artist = ({
   baseArtist,
   onMouseEnter,
+  onMouseLeave,
   onClick,
   handleClose,
   isActive = false,
 }: {
   baseArtist: SimplifiedTopItem;
   onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
   onClick: () => void;
   handleClose: () => void;
   isActive?: boolean;
 }) => {
   const queryClient = useQueryClient();
+  const [timeout, updateTimeout] = useState<typeof setTimeout | null>();
   const [activeBreadcrumb, setActiveBreadcrumb] = useState(baseArtist);
+  const [placeholder, setPlaceholder] = useState(baseArtist);
   const { data, isFetched } = useArtist({
     id: activeBreadcrumb.id,
-    placeholderData: { artist: baseArtist },
+    placeholderData: { artist: placeholder },
     isEnabled: isActive,
   });
 
@@ -39,9 +44,20 @@ export const Artist = ({
     [isActive, baseArtist]
   );
 
+  const isBreadcrumb = (item) => item.id !== baseArtist.id;
+
   const handleSetActiveBreadcrumb = (item) => {
-    handleAddBreadcrumb(item);
+    setPlaceholder(item);
     setActiveBreadcrumb(item);
+    handleAddBreadcrumb(item);
+  };
+
+  const handleRemoveBreadcrumb = (item) => {
+    const index = breadCrumbs.findIndex((i) => i.id === item.id);
+    const replacement = breadCrumbs[index - 1];
+    setActiveBreadcrumb(replacement);
+    setPlaceholder(replacement);
+    setBreadCrumbs(breadCrumbs.filter((i) => i.id !== item.id));
   };
   return (
     <React.Fragment>
@@ -66,49 +82,62 @@ export const Artist = ({
       </AnimatePresence>
 
       <div className="w-full bg-gray-200 dark:bg-faded-green justify-self-start relative items-start flex flex-row shadow-md rounded-md group overflow-hidden">
-        <div className="flex flex-col w-full min-w-full">
+        <div className="flex flex-col w-full min-w-full flex-wrap">
           <div
             className={cx({
               "border-b border-green-custom": isActive,
             })}
           >
-            <div
-              className="p-5 flex flex-row items-center gap-4 cursor-pointer bg-gray-200 dark:bg-faded-green dark:hover:bg-green-custom transition-all"
-              onMouseEnter={onMouseEnter || null}
-              onClick={handleClick}
-            >
-              <div
-                className={cx(
-                  "overflow-hidden rounded-full shadow-md flex-shrink-0 transition-all",
-                  {
-                    "md:w-32 md:h-32 w-20 h-20": isActive,
-                    "md:w-28 md:h-28 w-20 h-20": !isActive,
-                  }
-                )}
+            <div className="p-5 flex flex-col md:flex-row cursor-pointer bg-gray-200 dark:bg-faded-green transition-all">
+              <section
+                className="flex flex-row items-center gap-4 w-full"
+                onMouseEnter={onMouseEnter || null}
+                onMouseLeave={onMouseLeave || null}
+                onClick={handleClick}
               >
-                <Image
-                  src={data.artist.images[0]?.url}
-                  height={data.artist.images[0]?.height}
-                  width={data.artist.images[0]?.width}
-                  alt={data.artist.name}
-                />
-              </div>
-              <div>
-                <h3
-                  className={cx("truncate text-md font-medium transition-all", {
-                    "sm:text-xl font-bold": isActive,
-                    "group-hover:underline": !isActive,
-                  })}
+                <div
+                  className={cx(
+                    "overflow-hidden rounded-full shadow-md flex-shrink-0 transition-all",
+                    {
+                      "md:w-32 md:h-32 w-20 h-20": isActive,
+                      "md:w-28 md:h-28 w-20 h-20": !isActive,
+                    }
+                  )}
                 >
-                  {data.artist.name}
-                </h3>
-                <div className="text-sm subtext">
-                  {data.artist.genres.string}
+                  <Image
+                    src={data.artist.images[0]?.url}
+                    height={data.artist.images[0]?.height}
+                    width={data.artist.images[0]?.width}
+                    alt={data.artist.name}
+                  />
                 </div>
-              </div>
+                <div>
+                  <h3
+                    className={cx(
+                      "truncate text-md font-medium transition-all",
+                      {
+                        "sm:text-xl font-bold": isActive,
+                        "group-hover:underline": !isActive,
+                      }
+                    )}
+                  >
+                    {data.artist.name}
+                  </h3>
+                  <div className="text-sm subtext">
+                    {data.artist.genres.string ?? data.artist.genres.join(", ")}
+                  </div>
+                </div>
+              </section>
               {!isActive && breadCrumbs.length > 1 && (
                 <div className="bg-gray-100 dark:bg-green-custom px-2 py-1 rounded-md self-start ml-auto text-sm">
                   {breadCrumbs.length}
+                </div>
+              )}
+              {isActive && isBreadcrumb(data.artist) && (
+                <div className="mt-2 md:ml-auto md:self-end">
+                  <Button onClick={() => handleRemoveBreadcrumb(data.artist)}>
+                    Remove
+                  </Button>
                 </div>
               )}
             </div>
@@ -126,7 +155,7 @@ export const Artist = ({
             )}
             {isActive && isFetched && (
               <motion.div
-                className="grid  grid-cols-1 md:grid-cols-6"
+                className="grid grid-cols-1 md:grid-cols-6"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -216,10 +245,16 @@ export const Artist = ({
                             isRounded: true,
                           }}
                           onMouseEnter={() =>
-                            setTimeout(() => {
-                              prefetchArtist(queryClient, artist.id);
-                            }, 500)
+                            updateTimeout(
+                              setTimeout(() => {
+                                prefetchArtist(queryClient, artist.id);
+                              }, 500)
+                            )
                           }
+                          onMouseLeave={() => {
+                            clearTimeout(timeout);
+                            setTimeout(null);
+                          }}
                           onClick={() =>
                             handleSetActiveBreadcrumb({ ...artist, images })
                           }

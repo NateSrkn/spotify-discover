@@ -9,6 +9,7 @@ export const ListItem = ({
   isRow,
   onClick,
   onMouseEnter,
+  onMouseLeave,
 }: {
   image: {
     url: string;
@@ -22,6 +23,7 @@ export const ListItem = ({
   isRow?: boolean;
   onClick?: () => void;
   onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }) => {
   return (
     <li
@@ -32,6 +34,7 @@ export const ListItem = ({
       })}
       title={description}
       onMouseEnter={onMouseEnter ?? null}
+      onMouseLeave={onMouseLeave ?? null}
       onClick={onClick ?? null}
     >
       <div
