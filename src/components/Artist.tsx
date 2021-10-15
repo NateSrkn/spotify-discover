@@ -46,6 +46,10 @@ export const Artist = ({
 
   const isBreadcrumb = (item) => item.id !== baseArtist.id;
 
+  const handleAction = (event, action) => {
+    event.stopPropagation();
+    action();
+  };
   const handleSetActiveBreadcrumb = (item) => {
     setPlaceholder(item);
     setActiveBreadcrumb(item);
@@ -81,53 +85,64 @@ export const Artist = ({
         ) : null}
       </AnimatePresence>
 
-      <div className="w-full bg-gray-200 dark:bg-faded-green justify-self-start relative items-start flex flex-row shadow-md rounded-md group overflow-hidden">
+      <div
+        className="w-full bg-gray-200 dark:bg-faded-green justify-self-start relative items-start flex flex-row shadow-md rounded-md group overflow-hidden"
+        aria-selected={isActive}
+        aria-current={isActive}
+        aria-expanded={isActive}
+      >
         <div className="flex flex-col w-full min-w-full flex-wrap">
           <div
             className={cx({
               "border-b border-green-custom": isActive,
             })}
           >
-            <div className="p-5 flex flex-col md:flex-row cursor-pointer bg-gray-200 dark:bg-faded-green transition-all">
-              <section
-                className="flex flex-row items-center gap-4 w-full"
-                onMouseEnter={onMouseEnter || null}
-                onMouseLeave={onMouseLeave || null}
-                onClick={handleClick}
+            <div
+              className="p-5 flex flex-row md:flex-row cursor-pointer bg-gray-200 dark:bg-faded-green transition-all items-center gap-4 w-full"
+              onMouseEnter={
+                onMouseEnter
+                  ? (event) => handleAction(event, onMouseEnter)
+                  : null
+              }
+              onMouseLeave={
+                onMouseLeave
+                  ? (event) => handleAction(event, onMouseLeave)
+                  : null
+              }
+              onClick={
+                handleClick ? (event) => handleAction(event, handleClick) : null
+              }
+            >
+              <div
+                className={cx(
+                  "overflow-hidden rounded-full shadow-md flex-shrink-0 transition-all",
+                  {
+                    "md:w-32 md:h-32 w-20 h-20": isActive,
+                    "md:w-28 md:h-28 w-20 h-20": !isActive,
+                  }
+                )}
               >
-                <div
-                  className={cx(
-                    "overflow-hidden rounded-full shadow-md flex-shrink-0 transition-all",
-                    {
-                      "md:w-32 md:h-32 w-20 h-20": isActive,
-                      "md:w-28 md:h-28 w-20 h-20": !isActive,
-                    }
-                  )}
+                <Image
+                  src={data.artist.images[0]?.url}
+                  height={data.artist.images[0]?.height}
+                  width={data.artist.images[0]?.width}
+                  alt={data.artist.name}
+                />
+              </div>
+              <div>
+                <h3
+                  className={cx("truncate text-md font-medium transition-all", {
+                    "sm:text-xl font-bold": isActive,
+                    "group-hover:underline": !isActive,
+                  })}
                 >
-                  <Image
-                    src={data.artist.images[0]?.url}
-                    height={data.artist.images[0]?.height}
-                    width={data.artist.images[0]?.width}
-                    alt={data.artist.name}
-                  />
+                  {data.artist.name}
+                </h3>
+                <div className="text-sm subtext">
+                  {data.artist.genres.string ?? data.artist.genres.join(", ")}
                 </div>
-                <div>
-                  <h3
-                    className={cx(
-                      "truncate text-md font-medium transition-all",
-                      {
-                        "sm:text-xl font-bold": isActive,
-                        "group-hover:underline": !isActive,
-                      }
-                    )}
-                  >
-                    {data.artist.name}
-                  </h3>
-                  <div className="text-sm subtext">
-                    {data.artist.genres.string ?? data.artist.genres.join(", ")}
-                  </div>
-                </div>
-              </section>
+              </div>
+
               {!isActive && breadCrumbs.length > 1 && (
                 <div className="bg-gray-100 dark:bg-green-custom px-2 py-1 rounded-md self-start ml-auto text-sm">
                   {breadCrumbs.length}
@@ -135,7 +150,13 @@ export const Artist = ({
               )}
               {isActive && isBreadcrumb(data.artist) && (
                 <div className="mt-2 md:ml-auto md:self-end">
-                  <Button onClick={() => handleRemoveBreadcrumb(data.artist)}>
+                  <Button
+                    onClick={(event) =>
+                      handleAction(event, () =>
+                        handleRemoveBreadcrumb(data.artist)
+                      )
+                    }
+                  >
                     Remove
                   </Button>
                 </div>

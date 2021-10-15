@@ -10,6 +10,7 @@ import { useQueryClient, QueryClient, dehydrate } from "react-query";
 import { useTopItems, prefetchArtist, useNowPlaying } from "../hooks";
 import { Artist, Track, Select, Layout } from "../components";
 import { getNowPlaying, getTopItems } from "../util/spotify";
+
 interface HomeProps {
   session: Session;
 }
@@ -69,6 +70,7 @@ export default function Home({ session }: HomeProps) {
         />
       </div>
       <hr className="w-full border-1 border-green-custom mt-2 mb-4" />
+
       <ul className="flex flex-col gap-4">
         {isFetched &&
           current_selection.items.map((item) => {
