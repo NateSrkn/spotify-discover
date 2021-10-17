@@ -20,7 +20,11 @@ export const Breadcrumb = ({ crumb, isActive, onClick = null }) => {
         />
       </div>
       <div className="hidden sm:invisible sm:block group-hover:visible absolute bottom-12 w-max shadow-lg z-50 drop-shadow-2xl bg-gray-200 dark:bg-faded-green px-2 py-1 rounded-md">
-        <span className="text-xs">{crumb.name}</span>
+        <span className="text-xs">
+          {crumb.type === "album"
+            ? `${crumb.artists.map((a) => a.name).join(", ")} - ${crumb.name}`
+            : crumb.name}
+        </span>
       </div>
     </div>
   );

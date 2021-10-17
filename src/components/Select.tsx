@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { FiChevronUp, FiChevronDown } from "react-icons/fi";
+import { useTimeout } from "../hooks";
 interface SelectProps {
   options: Array<{ label: string; value: string }>;
   onClick: (value: string) => void;
@@ -9,18 +10,15 @@ interface SelectProps {
 export const Select = ({ options, onClick, defaultValue }: SelectProps) => {
   const [selected, setSelected] = useState(defaultValue);
   const [isOpen, setIsOpen] = useState(false);
-  let timeout = null;
+  const [handleSetTimeout, handleClearTimeout] = useTimeout();
   const handleClick = (option) => {
     onClick(option.value);
     setIsOpen(!isOpen);
     setSelected(option);
   };
 
-  const onBlurHandler = () => {
-    timeout = setTimeout(() => setIsOpen(false));
-  };
-
-  const onFocusHandler = () => clearTimeout(timeout);
+  const onBlurHandler = () => handleSetTimeout(() => setIsOpen(false), null);
+  const onFocusHandler = () => handleClearTimeout();
 
   return (
     <div

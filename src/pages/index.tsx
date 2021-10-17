@@ -1,30 +1,29 @@
 import { Session } from "next-auth";
 import { getSession } from "next-auth/client";
-import { options as optionsAtom } from "../util/store";
 import { GetServerSideProps } from "next";
-
-import { useAtom } from "jotai";
 import React, { useState } from "react";
 import { toUppercase } from "../util/helpers";
-import { useQueryClient, QueryClient, dehydrate } from "react-query";
-import { useTopItems, prefetchArtist, useNowPlaying } from "../hooks";
-import { Artist, Track, Select, Layout } from "../components";
+import { QueryClient, dehydrate } from "react-query";
+import { useTopItems, useNowPlaying } from "../hooks";
+import { Track, Select, Layout } from "../components";
 import { getNowPlaying, getTopItems } from "../util/spotify";
+import { ExpandableCard } from "../components/ExpandableCard";
+import { Options } from "../util/types/spotify";
 
 interface HomeProps {
   session: Session;
 }
 export default function Home({ session }: HomeProps) {
-  const queryClient = useQueryClient();
-  const [timeout, updateTimeout] = useState<typeof setTimeout | null>();
-  const [options, setOptions] = useAtom(optionsAtom);
-  const [activeArtist, setActiveArtist] = useState(null);
+  const [options, setOptions] = useState<Options>({
+    type: "artists",
+    termLength: "short_term",
+  });
+  const [activeArtist, setActiveArtist] = useState<string>(null);
   const { data: current_selection, isFetched } = useTopItems(
     options.type,
     options.termLength
   );
   const { data: nowPlaying } = useNowPlaying();
-
   const types = ["tracks", "artists"];
   const titles = {
     long_term: "All Time",
@@ -70,7 +69,6 @@ export default function Home({ session }: HomeProps) {
         />
       </div>
       <hr className="w-full border-1 border-green-custom mt-2 mb-4" />
-
       <ul className="flex flex-col gap-4">
         {isFetched &&
           current_selection.items.map((item) => {
@@ -79,23 +77,11 @@ export default function Home({ session }: HomeProps) {
             }
             const isActive = item.id === activeArtist;
             return (
-              <Artist
+              <ExpandableCard
                 key={item.id}
-                baseArtist={item}
-                onMouseEnter={() =>
-                  updateTimeout(
-                    setTimeout(() => {
-                      prefetchArtist(queryClient, item.id);
-                    }, 500)
-                  )
-                }
-                onMouseLeave={() => {
-                  clearTimeout(timeout);
-                  setTimeout(null);
-                }}
-                onClick={() => setActiveArtist(item.id)}
-                isActive={isActive}
-                handleClose={() => setActiveArtist(null)}
+                baseData={item}
+                isOpen={isActive}
+                onClick={(id) => setActiveArtist(id)}
               />
             );
           })}
@@ -122,12 +108,12 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   await queryClient.prefetchQuery("nowPlaying", () => getNowPlaying(session));
   await queryClient.prefetchQuery(
     ["artists", "short_term"],
-    () => getTopItems({ type: "artists", time_range: "short_term" }, session),
+    () => getTopItems({ type: "artists", termLength: "short_term" }, session),
     queryConfig
   );
   await queryClient.prefetchQuery(
     ["tracks", "short_term"],
-    () => getTopItems({ type: "tracks", time_range: "short_term" }, session),
+    () => getTopItems({ type: "tracks", termLength: "short_term" }, session),
     queryConfig
   );
   return {
