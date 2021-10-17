@@ -1,8 +1,22 @@
 import { request } from "./api";
 import { Session } from "next-auth";
 
-import { Artist, Track, SimplifiedTopItem } from "./types/spotify";
+import {
+  Artist,
+  Track,
+  SimpleTrack,
+  SimpleArtist,
+  Album,
+  Collection,
+  PagingObject,
+  Options,
+  SimplifiedAlbumObject,
+  TrackBase,
+  ArtistBase,
+  AlbumBase,
+} from "./types/spotify";
 import { sanitizeObject } from "./helpers";
+import { AxiosPromise } from "axios";
 
 const TOKEN_ENDPOINT = `https://accounts.spotify.com/api/token`;
 const client_id = process.env.NEXT_PUBLIC_CLIENT_ID;
@@ -113,41 +127,22 @@ export const getArtistData = async (artist_id, session) => {
     requests
   );
   return {
-    artist: {
-      name: artist.data.name,
-      id: artist.data.id,
-      type: artist.data.type,
-      href: artist.data.external_urls.spotify,
-      followers: artist.data.followers.total,
-      genres: {
-        string: artist.data.genres.join(", "),
-        array: artist.data.genres,
-      },
-      images: artist.data.images,
-      popularity: artist.data.popularity,
-    } as SimplifiedTopItem,
-    related_artists: related_artists.data.artists as Artist[],
-    top_tracks: top_tracks.data.tracks as Track[],
+    ...simplifyStructure(artist.data),
+    related_artists: related_artists.data.artists.map((a) =>
+      simplifyStructure(a)
+    ),
+    tracks: top_tracks.data.tracks.map((t) => simplifyStructure(t)),
     collection: albums.data.items
       .filter(({ available_markets }) => available_markets.includes("US"))
-      .reduce((acc, album) => {
-        if (!acc[album.album_type]) {
-          acc[album.album_type] = [];
-        }
-        acc[album.album_type].push(album);
-        return acc;
-      }, {}),
+      .reduce(albumReducer, {}),
   };
 };
 
 export const getTopItems = async (
-  options: {
-    type: "tracks" | "artists";
-    time_range: "long_term" | "medium_term" | "short_term";
-  },
+  options: { type: Options["type"]; time_range: Options["termLength"] },
   session: Session
-) => {
-  const { type = "tracks", time_range = "short_term" } = options;
+): Promise<PagingObject<SimpleArtist | SimpleTrack>> => {
+  const { type = "artists", time_range = "short_term" } = options;
   const { data } = await request({
     url: `/me/top/${type}`,
     headers: { Authorization: `Bearer ${session.accessToken}` },
@@ -156,32 +151,74 @@ export const getTopItems = async (
       limit: 20,
     },
   });
-  if (!data) return {};
-  const items = data.items.map((item: Artist | Track) => {
-    const isTrack = predicateTrack(item);
-    return sanitizeObject({
-      name: item.name,
-      id: item.id,
-      duration: isTrack ? item.duration_ms : undefined,
-      images: isTrack ? item.album.images : item.images,
-      album: isTrack ? item.album.name : undefined,
-      popularity: item.popularity,
-      followers: isTrack ? undefined : item.followers.total,
-      preview_url: isTrack ? item.preview_url : undefined,
-      type: item.type,
-      genres: isTrack
-        ? undefined
-        : { string: item.genres.join(", "), array: item.genres },
-      artists: isTrack
-        ? {
-            string: item.artists.map((artist) => artist.name).join(", "),
-            array: item.artists,
-          }
-        : undefined,
-    });
-  });
-  data.items = items;
+
+  data.items = data.items.map((item: Artist | Track) =>
+    simplifyStructure(item)
+  );
   return data;
 };
 
-export const predicateTrack = (data): data is Track => data.type === "track";
+export const getAlbum = (id, session): AxiosPromise<Album | Album[]> => {
+  const isMultiple = id.includes(",");
+  const params: { [key: string]: any } = {};
+  if (isMultiple) {
+    params.ids = id;
+  }
+  return request({
+    url: isMultiple ? `/albums` : `/albums/${id}`,
+    params,
+    headers: { Authorization: `Bearer ${session.accessToken}` },
+  });
+};
+
+export const albumReducer = (acc, album: Album): Collection => {
+  if (!acc[album.album_type]) {
+    acc[album.album_type] = {
+      ids: [],
+      list: [],
+    };
+  }
+  acc[album.album_type].ids.push(album.id);
+  acc[album.album_type].list.push(album);
+  return acc;
+};
+
+export const simplifyStructure = (data: Partial<Artist | Track | Album>) => {
+  const base = {
+    name: data.name,
+    id: data.id,
+    type: data.type,
+    href: data.href,
+  };
+  let expanded = {};
+  switch (data.type) {
+    case "artist": {
+      expanded = {
+        popularity: "popularity" in data ? data.popularity : undefined,
+        followers: "followers" in data ? data.followers.total : undefined,
+        genres: data.genres,
+        images: data.images,
+      };
+      break;
+    }
+    case "album": {
+      expanded = {
+        artists: data.artists.map((artist) => simplifyStructure(artist)),
+        images: data.images,
+      };
+      break;
+    }
+    case "track": {
+      expanded = {
+        popularity: data.popularity,
+        preview_url: data.preview_url,
+        artists: data.artists.map((artist) => simplifyStructure(artist)),
+        images: data.album.images,
+      };
+    }
+  }
+  return sanitizeObject({
+    ...base,
+    ...expanded,
+  });
+};

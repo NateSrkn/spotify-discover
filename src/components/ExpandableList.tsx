@@ -10,6 +10,7 @@ export const ListItem = ({
   onClick,
   onMouseEnter,
   onMouseLeave,
+  isActive,
 }: {
   image: {
     url: string;
@@ -24,13 +25,15 @@ export const ListItem = ({
   onClick?: () => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
+  isActive?: boolean;
 }) => {
   return (
     <li
       className={cx("w-full", {
-        "my-2 hover:bg-gray-100 dark:hover:bg-green-custom p-1 cursor-pointer rounded-md":
+        "my-2 hover:bg-gray-100 dark:hover:bg-green-custom p-1 cursor-pointer rounded-md transition-all":
           onClick,
         "my-3": !onClick,
+        "bg-green-custom": isActive,
       })}
       title={description}
       onMouseEnter={onMouseEnter ?? null}
@@ -38,7 +41,7 @@ export const ListItem = ({
       onClick={onClick ?? null}
     >
       <div
-        className={cx("flex gap-4", {
+        className={cx("flex gap-2", {
           "flex-col": !isRow,
           "items-center": isRow,
         })}

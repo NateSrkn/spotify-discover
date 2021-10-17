@@ -69,11 +69,19 @@ ul {
   @apply font-medium truncate text-sm;
 }
 
-.mouse-follower {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  transform: all 0.2s;
-  pointer-events: none;
+.track,
+.mini-track {
+  .icon {
+    @apply ml-auto mr-2 text-white fill-current;
+    visibility: hidden;
+    &.is-active {
+      visibility: visible;
+    }
+  }
+
+  &:hover {
+    .icon {
+      visibility: visible;
+    }
+  }
 }

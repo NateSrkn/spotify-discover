@@ -14,6 +14,7 @@ const config = {
         "green-custom": "#414A4A",
         "pewter-blue": "#87A0B2",
         "faded-green": "#1E2828",
+        "spotify-green": "#1ED760",
         gray: {
           0: "#fff",
           100: "#fafafa",
