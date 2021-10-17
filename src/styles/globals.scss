@@ -56,7 +56,10 @@ ul {
   &.xs {
     @apply w-10 h-10;
   }
-  &.small {
+  &.medium {
+    @apply w-20 h-20;
+  }
+  &.large {
     @apply w-32 h-32;
   }
 }
@@ -69,10 +72,15 @@ ul {
   @apply font-medium truncate text-sm;
 }
 
+.badge {
+  @extend .subtext;
+  @apply text-[10px] uppercase;
+}
+
 .track,
 .mini-track {
   .icon {
-    @apply ml-auto mr-2 text-white fill-current;
+    @apply ml-auto mr-2 text-black dark:text-white fill-current;
     visibility: hidden;
     &.is-active {
       visibility: visible;
