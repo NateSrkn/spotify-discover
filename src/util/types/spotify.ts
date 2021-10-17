@@ -83,6 +83,7 @@ export interface SimpleTrack extends SimpleItem {
   preview_url: string;
   artists: SimpleArtist[];
   images: SpotifyImage[];
+  track_number: number;
 }
 export interface SimpleCurrentPlaying {
   isListening: boolean;

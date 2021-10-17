@@ -90,16 +90,18 @@ export const ExpandableList = ({
           {children?.slice(0, listSize).map((item) => item)}
         </ul>
         {!isShort && (
-          <Button onClick={() => setIsExpanded(!isExpanded)}>
-            <div className="flex items-end gap-2">
-              See {isExpanded ? "Less" : "More"}{" "}
-              {isExpanded ? (
-                <FiChevronUp size={17} />
-              ) : (
-                <FiChevronDown size={17} />
-              )}
-            </div>
-          </Button>
+          <div className="mt-2">
+            <Button onClick={() => setIsExpanded(!isExpanded)}>
+              <div className="flex items-end gap-2">
+                See {isExpanded ? "Less" : "More"}{" "}
+                {isExpanded ? (
+                  <FiChevronUp size={17} />
+                ) : (
+                  <FiChevronDown size={17} />
+                )}
+              </div>
+            </Button>
+          </div>
         )}
       </div>
     );

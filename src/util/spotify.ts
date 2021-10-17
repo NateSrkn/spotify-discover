@@ -214,6 +214,7 @@ export const simplifyStructure = (data: Partial<Artist | Track | Album>) => {
         preview_url: data.preview_url,
         artists: data.artists.map((artist) => simplifyStructure(artist)),
         images: data.album.images,
+        track_number: data.track_number,
       };
     }
   }

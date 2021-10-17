@@ -39,30 +39,46 @@ export const Track = ({ track }: { track: SimpleTrack }) => {
   );
 };
 
-export const MiniTrack = ({ track }: { track: SimpleTrack }) => {
+export const MiniTrack = ({
+  track,
+  isNumbered = false,
+  hasImage = true,
+}: {
+  track: SimpleTrack;
+  isNumbered?: boolean;
+  hasImage?: boolean;
+}) => {
   const { updateAudio, currentlyPlaying, isPlaying } = useContext(AudioContext);
   const isCurrentTrack = currentlyPlaying?.id === track.id;
   return (
     <div
       className={cx(
-        "w-full my-1 hover:bg-gray-100 dark:hover:bg-green-custom p-1 cursor-pointer rounded-md transition-all mini-track",
+        "w-full hover:bg-gray-100 dark:hover:bg-green-custom p-1 cursor-pointer rounded-md transition-all mini-track",
         {
           "text-spotify-green": isCurrentTrack,
+          "p-2": !hasImage,
         }
       )}
       title={track.name}
       onClick={() => updateAudio(track)}
     >
-      <div className="flex items-center">
-        <div className="flex items-center gap-4">
-          <div className="img-wrapper xs">
-            <Image
-              src={track.images[0].url}
-              height={track.images[0].height}
-              width={track.images[0].width}
-              alt={track.name}
-            />
+      <div className="flex items-center gap-2">
+        {isNumbered && (
+          <div className="text-xs subtext proportional-nums">
+            {track.track_number}.
           </div>
+        )}
+        <div className="flex items-center gap-4">
+          {hasImage && (
+            <div className="img-wrapper xs">
+              <Image
+                src={track.images[0].url}
+                height={track.images[0].height}
+                width={track.images[0].width}
+                alt={track.name}
+              />
+            </div>
+          )}
           <div className="card-sm-text">{track.name}</div>
         </div>
         <IconHandler isCurrentTrack={isCurrentTrack} isPlaying={isPlaying} />

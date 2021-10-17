@@ -12,7 +12,7 @@ import cx from "classnames";
 import { Image, Button, ExpandableList, ListItem } from ".";
 import { toUppercase } from "../util/helpers";
 import { simplifyStructure } from "../util/spotify";
-import { FiX } from "react-icons/fi";
+import { FiChevronLeft, FiX } from "react-icons/fi";
 interface ExpandableCardProps {
   baseData: SimpleArtist;
   isOpen: boolean;
@@ -23,9 +23,11 @@ export const ExpandableCard = ({
   isOpen,
   onClick,
 }: ExpandableCardProps) => {
+  const queryClient = useQueryClient();
   const [activeArtist, setActiveArtist] = useState<
     SimpleArtist | ExpandedArtist
   >(baseData);
+  const [handleSetTimeout, handleClearTimeout] = useTimeout();
   const [activeAlbum, setActiveAlbum] = useState<Album | null>(null);
   const [breadcrumbs, setBreadcrumbs] = useState<typeof activeArtist[]>([
     activeArtist,
@@ -85,6 +87,10 @@ export const ExpandableCard = ({
           <div className={isOpen && `border-b border-green-custom`}>
             <div
               className="p-5 flex flex-row md:flex-row cursor-pointer bg-gray-200 dark:bg-faded-green transition-all items-center gap-4 w-full"
+              onMouseEnter={() =>
+                handleSetTimeout(() => prefetchArtist(queryClient, baseData.id))
+              }
+              onMouseLeave={handleClearTimeout}
               onClick={() => (isOpen ? onClick(null) : onClick(id))}
             >
               <div
@@ -140,7 +146,9 @@ export const ExpandableCard = ({
           {isOpen && isFetched && activeAlbum && (
             <div className="pt-5 px-5 pb-2">
               <Button onClick={() => setActiveAlbum(null)}>
-                Back to {name}
+                <div className="flex items-center gap-1">
+                  <FiChevronLeft /> Back to {name}
+                </div>
               </Button>
             </div>
           )}
@@ -247,14 +255,49 @@ const ExpandedArtistDisplay = ({
 
 const ExpandedAlbumDisplay = ({ album }: { album: Album }) => {
   return (
-    <div className="col-span-full px-5">
-      <h4 className="mb-2">{album.name}</h4>
-      {album.tracks.items.map((track) => (
-        <MiniTrack
-          key={track.id}
-          track={simplifyStructure({ ...track, album }) as SimpleTrack}
-        />
-      ))}
+    <div className="col-span-full px-5 pb-5">
+      <div className="mb-2 flex gap-2 items-end flex-wrap md:flex-nowrap">
+        <div className="img-wrapper w-3/4 h-3/4 md:w-28 md:h-28">
+          <Image
+            src={album.images[1].url}
+            height={album.images[1].height}
+            width={album.images[1].width}
+            alt={album.name}
+          />
+        </div>
+        <div className="flex flex-col w-full">
+          <h4 className="truncate">{album.name}</h4>
+          <div className="subtext text-xs sm:text-sm">
+            {toUppercase(album.album_type)} &#8226; {album.tracks.items.length}{" "}
+            Songs &#8226; Released {formatDate(album.release_date)}
+          </div>
+        </div>
+      </div>
+      <div className={`grid grid-cols-1 md:grid-cols-2`}>
+        {album.tracks.items.map((track) => (
+          <div
+            key={track.id}
+            className={cx({
+              "col-span-full": album.total_tracks < 2,
+            })}
+          >
+            <MiniTrack
+              isNumbered={true}
+              hasImage={false}
+              track={simplifyStructure({ ...track, album }) as SimpleTrack}
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
+};
+
+const formatDate = (input) => {
+  const date = new Date(input);
+  if (!isNaN(date.getTime())) {
+    return (
+      date.getMonth() + 1 + "-" + date.getDate() + "-" + date.getFullYear()
+    );
+  }
 };
