@@ -41,7 +41,9 @@ ul {
 }
 
 .button {
-  @apply text-sm font-normal dark:text-white inline-flex items-center py-[8px] px-[12px] rounded-[4px] relative;
+  @apply text-sm font-normal dark:text-white inline-flex items-center relative;
+  padding: 8px 12px;
+  border-radius: 4px;
 }
 
 .background-hover {
@@ -51,18 +53,34 @@ ul {
 .img-wrapper {
   @apply flex shadow-md flex-shrink-0;
   &.artist {
-    @apply w-[80px] h-[80px] sm:w-[100px] sm:h-[100px];
+    width: 80px;
+    height: 80px;
+    @media (min-width: 640px) {
+      width: 100px;
+      height: 100px;
+    }
     &.is-expanded {
-      @apply w-[100px] h-[100px] sm:w-[120px] sm:h-[120px];
+      width: 100px;
+      height: 100px;
+      @media (min-width: 640px) {
+        width: 120px;
+        height: 120px;
+      }
     }
   }
 
   &.breadcrumb {
-    @apply w-[40px] h-[40px];
+    width: 40px;
+    height: 40px;
   }
 
   &.album {
-    @apply w-[100px] h-[100px] sm:w-[120px] sm:h-[120px];
+    width: 100px;
+    height: 100px;
+    @media (min-width: 640px) {
+      width: 120px;
+      height: 120px;
+    }
   }
 
   &.is-rounded {
@@ -88,7 +106,8 @@ ul {
 
 .badge {
   @extend .subtext;
-  @apply text-[10px] uppercase bg-gray-100 dark:bg-faded-green;
+  @apply uppercase bg-gray-100 dark:bg-faded-green;
+  font-size: 10px;
 }
 
 .track,
