@@ -19,7 +19,7 @@ a {
 }
 
 .subtext {
-  @apply text-gray-500 dark:text-pewter-blue;
+  @apply text-gray-500 dark:text-pewter-blue text-sm;
 }
 
 .bordered-item {
@@ -41,7 +41,7 @@ ul {
 }
 
 .button {
-  @apply text-sm font-normal dark:text-white inline-block px-3 py-2 rounded-lg;
+  @apply text-sm font-normal dark:text-white inline-flex items-center py-[8px] px-[12px] rounded-[4px] relative;
 }
 
 .background-hover {
@@ -50,18 +50,32 @@ ul {
 
 .img-wrapper {
   @apply flex shadow-md flex-shrink-0;
+  &.artist {
+    @apply w-[80px] h-[80px] sm:w-[100px] sm:h-[100px];
+    &.is-expanded {
+      @apply w-[100px] h-[100px] sm:w-[120px] sm:h-[120px];
+    }
+  }
+
+  &.breadcrumb {
+    @apply w-[40px] h-[40px];
+  }
+
+  &.album {
+    @apply w-[100px] h-[100px] sm:w-[120px] sm:h-[120px];
+  }
+
   &.is-rounded {
     @apply rounded-full overflow-hidden;
   }
-  &.xs {
-    @apply w-10 h-10;
+
+  img {
+    @apply object-cover object-center w-full h-full;
   }
-  &.medium {
-    @apply w-20 h-20;
-  }
-  &.large {
-    @apply w-32 h-32;
-  }
+}
+
+.title {
+  @apply text-base sm:text-lg truncate;
 }
 
 .filler-img {
@@ -74,7 +88,7 @@ ul {
 
 .badge {
   @extend .subtext;
-  @apply text-[10px] uppercase;
+  @apply text-[10px] uppercase bg-gray-100 dark:bg-faded-green;
 }
 
 .track,
@@ -92,4 +106,10 @@ ul {
       visibility: visible;
     }
   }
+}
+.sticky-header {
+  position: sticky;
+  z-index: 10;
+  top: 0;
+  backdrop-filter: saturate(180%) blur(20px);
 }

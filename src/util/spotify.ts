@@ -68,9 +68,7 @@ export const getNowPlaying = async (session: Session) => {
       isListening: false,
     };
   }
-  const artistString = data.item.artists
-    .map((artist) => artist.name)
-    .join(", ");
+  const artistString = data.item.artists.map((artist) => artist.name).join(", ");
   return {
     isPlaying: data.is_playing,
     isListening: true,
@@ -123,14 +121,10 @@ export const getArtistData = async (artist_id, session) => {
       headers: { Authorization: `Bearer ${session.accessToken}` },
     })
   );
-  const [artist, related_artists, top_tracks, albums] = await Promise.all(
-    requests
-  );
+  const [artist, related_artists, top_tracks, albums] = await Promise.all(requests);
   return {
     ...simplifyStructure(artist.data),
-    related_artists: related_artists.data.artists.map((a) =>
-      simplifyStructure(a)
-    ),
+    related_artists: related_artists.data.artists.map((a) => simplifyStructure(a)),
     tracks: top_tracks.data.tracks.map((t) => simplifyStructure(t)),
     collection: albums.data.items
       .filter(({ available_markets }) => available_markets.includes("US"))
@@ -152,9 +146,7 @@ export const getTopItems = async (
     },
   });
 
-  data.items = data.items.map((item: Artist | Track) =>
-    simplifyStructure(item)
-  );
+  data.items = data.items.map((item: Artist | Track) => simplifyStructure(item));
   return data;
 };
 

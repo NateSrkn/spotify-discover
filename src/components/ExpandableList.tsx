@@ -17,7 +17,7 @@ export const ListItem = ({
     height: number;
     width: number;
     isRounded?: boolean;
-    size?: "xs" | "small";
+    size?: "breadcrumb" | "album";
     alt?: string;
   };
   description: string;
@@ -47,7 +47,7 @@ export const ListItem = ({
         })}
       >
         <div
-          className={cx(`img-wrapper ${image.size || ""}`, {
+          className={cx(`img-wrapper ${image.size ?? ""}`, {
             "is-rounded": image?.isRounded,
           })}
         >
@@ -68,12 +68,12 @@ export const ExpandableList = ({
   title,
   children,
   startingLength = 5,
-  config = { type: "list" },
+  ...rest
 }: {
-  title: string;
+  title?: string;
   children: React.ReactNodeArray;
   startingLength?: number;
-  config?: { type: "list" | "grid" };
+  [key: string]: any;
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   if (children) {
@@ -81,25 +81,16 @@ export const ExpandableList = ({
     const isShort = children.length <= startingLength;
     return (
       <div className="w-full">
-        <h4 className="mb-2">{title}</h4>
-        <ul
-          className={cx({
-            "grid grid-cols-3 sm:grid-cols-5 gap-3": config.type === "grid",
-          })}
-        >
-          {children?.slice(0, listSize).map((item) => item)}
-        </ul>
+        {title && <h4 className="mb-2">{title}</h4>}
+        <ul {...rest}>{children?.slice(0, listSize).map((item) => item)}</ul>
         {!isShort && (
-          <div className="mt-2">
-            <Button onClick={() => setIsExpanded(!isExpanded)}>
-              <div className="flex items-end gap-2">
-                See {isExpanded ? "Less" : "More"}{" "}
-                {isExpanded ? (
-                  <FiChevronUp size={17} />
-                ) : (
-                  <FiChevronDown size={17} />
-                )}
-              </div>
+          <div className="my-2">
+            <Button
+              onClick={() => setIsExpanded(!isExpanded)}
+              icon={isExpanded ? FiChevronUp : FiChevronDown}
+              iconPosition="right"
+            >
+              <div className="flex items-center gap-2">See {isExpanded ? "Less" : "More"}</div>
             </Button>
           </div>
         )}

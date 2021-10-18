@@ -1,10 +1,19 @@
+import React from "react";
 interface IButton {
   children: React.ReactNode;
   onClick: () => void;
+  icon?: React.ElementType;
+  iconPosition?: "left" | "right";
   [key: string]: any;
 }
 
-export const Button = ({ children, onClick, ...rest }: IButton) => {
+export const Button = ({
+  children,
+  onClick,
+  icon: Icon,
+  iconPosition = "left",
+  ...rest
+}: IButton) => {
   const handleClick = (event) => {
     event.stopPropagation();
     onClick();
@@ -15,7 +24,9 @@ export const Button = ({ children, onClick, ...rest }: IButton) => {
       onClick={handleClick}
       {...rest}
     >
+      {Icon && iconPosition === "left" ? <Icon className="mr-1 text-xl" /> : null}
       {children}
+      {Icon && iconPosition === "right" ? <Icon className="ml-1 text-xl" /> : null}
     </button>
   );
 };

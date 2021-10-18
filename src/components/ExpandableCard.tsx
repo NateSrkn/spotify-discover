@@ -1,37 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { useTimeout, prefetchArtist, useArtist, useAlbum } from "../hooks";
-import {
-  Album,
-  ExpandedArtist,
-  SimpleArtist,
-  SimpleTrack,
-} from "../util/types/spotify";
+import { Album, ExpandedArtist, SimpleArtist, SimpleTrack } from "../util/types/spotify";
 import { useQueryClient } from "react-query";
-import { Breadcrumb, MiniTrack } from ".";
+import { ArtistList, Breadcrumb, MiniTrack } from ".";
 import cx from "classnames";
-import { Image, Button, ExpandableList, ListItem } from ".";
+import { Image, Button } from ".";
 import { toUppercase } from "../util/helpers";
 import { simplifyStructure } from "../util/spotify";
 import { FiChevronLeft, FiX } from "react-icons/fi";
+import { TrackList, AlbumList } from ".";
 interface ExpandableCardProps {
   baseData: SimpleArtist;
   isOpen: boolean;
   onClick: (id: string) => void;
 }
-export const ExpandableCard = ({
-  baseData,
-  isOpen,
-  onClick,
-}: ExpandableCardProps) => {
+export const ExpandableCard = ({ baseData, isOpen, onClick }: ExpandableCardProps) => {
   const queryClient = useQueryClient();
-  const [activeArtist, setActiveArtist] = useState<
-    SimpleArtist | ExpandedArtist
-  >(baseData);
   const [handleSetTimeout, handleClearTimeout] = useTimeout();
+  const [activeArtist, setActiveArtist] = useState<SimpleArtist | ExpandedArtist>(baseData);
   const [activeAlbum, setActiveAlbum] = useState<Album | null>(null);
-  const [breadcrumbs, setBreadcrumbs] = useState<typeof activeArtist[]>([
-    activeArtist,
-  ]);
+  const [breadcrumbs, setBreadcrumbs] = useState<typeof activeArtist[]>([activeArtist]);
   const { data: artist, isFetched } = useArtist({
     artist: activeArtist,
     isEnabled: isOpen,
@@ -41,7 +29,6 @@ export const ExpandableCard = ({
     isEnabled: !!activeAlbum?.id,
   });
   const { name, id, genres, images } = artist;
-
   useEffect(() => !isOpen && setActiveArtist(baseData), [isOpen, baseData]);
   const isBreadcrumb = (item) => item.id !== baseData.id;
 
@@ -58,6 +45,15 @@ export const ExpandableCard = ({
     setBreadcrumbs(breadcrumbs.filter((i) => i.id !== item.id));
   };
 
+  const handleSetActiveArtist = (artist) => {
+    setActiveArtist(artist);
+    setActiveAlbum(null);
+  };
+
+  const handleMouseEnter = (id) => handleSetTimeout(() => prefetchArtist(queryClient, id), 500);
+
+  const handleClick = () => (isOpen ? onClick(null) : onClick(id));
+  const shouldDisplay = isOpen && isFetched && !activeAlbum;
   return (
     <div
       className="transition-all"
@@ -77,187 +73,93 @@ export const ExpandableCard = ({
               key={item.id}
               crumb={item}
               isActive={item.id === activeArtist.id}
-              onClick={() => setActiveArtist(item)}
+              onClick={() => handleSetActiveArtist(item)}
             />
           ))}
       </div>
-
-      <div className="w-full bg-gray-200 dark:bg-faded-green justify-self-start relative items-start flex flex-row shadow-md rounded-md group overflow-hidden">
-        <div className="flex flex-col flex-wrap w-full min-w-full">
-          <div className={isOpen && `border-b border-green-custom`}>
-            <div
-              className="p-5 flex flex-row md:flex-row cursor-pointer bg-gray-200 dark:bg-faded-green transition-all items-center gap-4 w-full"
-              onMouseEnter={() =>
-                handleSetTimeout(() => prefetchArtist(queryClient, baseData.id))
-              }
-              onMouseLeave={handleClearTimeout}
-              onClick={() => (isOpen ? onClick(null) : onClick(id))}
-            >
-              <div
-                className={cx(
-                  "overflow-hidden shadow-md flex-shrink-0 rounded-full w-16 h-16 transition-all",
-                  {
-                    "md:w-32 md:h-32": isOpen,
-                    "md:w-28 md:h-28": !isOpen,
-                  }
-                )}
-              >
-                <Image
-                  src={images[0]?.url}
-                  height={images[0]?.height}
-                  width={images[0]?.width}
-                  alt={name}
-                />
-              </div>
-              <div className="w-full max-w-full">
-                <h3
-                  className={cx(
-                    "truncate text-sm font-medium transition-all w-full",
-                    {
-                      "sm:text-xl font-bold": isOpen,
-                      "group-hover:underline": !isOpen,
-                    }
-                  )}
-                >
-                  {name}
-                </h3>
-                <div className="text-xs subtext md:text-sm overflow-ellipsis">
-                  {genres?.join(", ")}
-                </div>
-              </div>
-              {!isOpen && breadcrumbs.length > 1 && (
-                <div className="bg-gray-100 dark:bg-green-custom px-2 py-1 rounded-md self-start ml-auto text-sm">
-                  {breadcrumbs.length}
-                </div>
-              )}
-              {isOpen && isBreadcrumb(artist) && (
-                <div className="absolute top-4 right-4">
-                  <Button
-                    onClick={() => handleRemoveBreadcrumb(artist)}
-                    title={`Remove ${artist.name}`}
-                    className="rounded-full background-hover w-max hover:scale-105 p-1"
-                  >
-                    <FiX />
-                  </Button>
-                </div>
-              )}
-            </div>
-          </div>
-          {isOpen && isFetched && activeAlbum && (
-            <div className="pt-5 px-5 pb-2">
-              <Button onClick={() => setActiveAlbum(null)}>
-                <div className="flex items-center gap-1">
-                  <FiChevronLeft /> Back to {name}
-                </div>
-              </Button>
-            </div>
-          )}
+      <div className="bg-gray-200 dark:bg-faded-green rounded-md">
+        <div
+          className={cx("p-5 flex items-center", {
+            "border-b border-green-custom": isOpen,
+          })}
+          onClick={handleClick}
+          onMouseEnter={() => handleMouseEnter(id)}
+          onMouseLeave={handleClearTimeout}
+        >
           <div
-            className={cx("transition-all duration-700", {
-              "p-5 opacity-100 visible": isOpen,
-              "grid grid-cols-1 md:grid-cols-6 p-0": isFetched,
-              "opacity-0 invisible p-0": !isOpen,
+            className={cx("img-wrapper artist is-rounded", {
+              "is-expanded": isOpen,
             })}
           >
-            {isOpen && !isFetched && "Loading..."}
-            {isOpen && isFetched && !activeAlbum && (
-              <ExpandedArtistDisplay
-                artist={artist as ExpandedArtist}
-                breadcrumbs={breadcrumbs}
-                handleAddBreadcrumb={handleAddBreadcrumb}
-                setActiveAlbum={setActiveAlbum}
-              />
-            )}
-            {isOpen && isFetched && activeAlbum && (
-              <ExpandedAlbumDisplay album={album} />
-            )}
+            <Image
+              src={images[0].url}
+              width={images[0].width}
+              height={images[0].height}
+              alt={name}
+            />
           </div>
+          <div className="pl-4 font-normal truncate">
+            <h3 className="title">{name}</h3>
+            <p className="subtext text-sm truncate">{genres.join(", ")}</p>
+          </div>
+        </div>
+        <div
+          className={cx("transition-all opacity-0 duration-500", {
+            "opacity-100": isOpen,
+            "grid grid-cols-6": shouldDisplay,
+          })}
+        >
+          {isOpen && !isFetched && <div className="p-5">Loading...</div>}
+          {shouldDisplay && (
+            <React.Fragment>
+              <div className="col-span-6 md:col-span-4 p-5 md:border-r md:border-green-custom">
+                <TrackList tracks={artist.tracks} title="Top Tracks" />
+                <AlbumList
+                  albums={artist.collection?.album?.list}
+                  title="Albums"
+                  onClick={setActiveAlbum}
+                />
+                <AlbumList
+                  albums={artist.collection?.single?.list}
+                  title="Singles"
+                  onClick={setActiveAlbum}
+                />
+                <AlbumList
+                  albums={artist.collection?.compilation?.list}
+                  title="Compilations"
+                  onClick={setActiveAlbum}
+                />
+              </div>
+              <div className="col-span-6 md:col-span-2 p-5">
+                <ArtistList
+                  artists={artist.related_artists.filter(
+                    (a) => !breadcrumbs.some((b) => b.id === a.id)
+                  )}
+                  title="Related Artists"
+                  onClick={handleAddBreadcrumb}
+                />
+              </div>
+            </React.Fragment>
+          )}
+          {isOpen && activeAlbum && (
+            <div className="p-5">
+              <Button onClick={() => setActiveAlbum(null)} icon={FiChevronLeft}>
+                Back
+              </Button>
+              <ExpandedAlbumDisplay album={album} />
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-const ExpandedArtistDisplay = ({
-  artist,
-  breadcrumbs,
-  handleAddBreadcrumb,
-  setActiveAlbum,
-}: {
-  artist: ExpandedArtist;
-  breadcrumbs: Array<SimpleArtist | ExpandedArtist | Album>;
-  handleAddBreadcrumb: (item: SimpleArtist | ExpandedArtist | Album) => void;
-  setActiveAlbum: (album: Album) => void;
-}) => {
-  const queryClient = useQueryClient();
-  const [handleSetTimeout, handleClearTimeout] = useTimeout();
-  return (
-    <React.Fragment>
-      <div className="flex flex-col gap-4 md:col-span-4 p-5">
-        <ExpandableList title="Top Tracks">
-          {artist?.tracks?.map((track) => (
-            <MiniTrack key={track.id} track={track} />
-          ))}
-        </ExpandableList>
-        {Object.entries(artist.collection).map(([key, values]) => (
-          <ExpandableList
-            key={key}
-            title={`${toUppercase(key)}s`}
-            config={{ type: "grid" }}
-          >
-            {values?.list?.map(({ images, ...album }) => (
-              <ListItem
-                key={album.id}
-                description={album.name}
-                image={{
-                  url: images[1]?.url,
-                  height: images[1]?.height,
-                  width: images[1]?.width,
-                  alt: album.name,
-                }}
-                onClick={() => setActiveAlbum({ images, ...album })}
-              />
-            ))}
-          </ExpandableList>
-        ))}
-      </div>
-      <div className="px-5 pb-5 md:p-5 md:border-l border-green-custom col-span-2">
-        <ExpandableList title="Related Artists" startingLength={10}>
-          {artist.related_artists
-            .filter(
-              (artist) => !breadcrumbs.some((crumb) => crumb.id === artist.id)
-            )
-            .map(({ images, ...artist }) => (
-              <ListItem
-                key={artist.id}
-                description={artist.name}
-                image={{
-                  url: images[2]?.url,
-                  height: images[2]?.height,
-                  width: images[2]?.width,
-                  alt: artist.name,
-                  size: "xs",
-                  isRounded: true,
-                }}
-                onMouseEnter={() =>
-                  handleSetTimeout(() => prefetchArtist(queryClient, artist.id))
-                }
-                onMouseLeave={handleClearTimeout}
-                onClick={() => handleAddBreadcrumb({ ...artist, images })}
-                isRow={true}
-              />
-            ))}
-        </ExpandableList>
-      </div>
-    </React.Fragment>
-  );
-};
-
 const ExpandedAlbumDisplay = ({ album }: { album: Album }) => {
   return (
-    <div className="col-span-full px-5 pb-5">
-      <div className="mb-2 flex gap-2 items-end flex-wrap md:flex-nowrap">
-        <div className="img-wrapper w-3/4 h-3/4 md:w-28 md:h-28">
+    <div className="col-span-full">
+      <div className="py-4 flex gap-2 items-center flex-wrap md:flex-nowrap w-full">
+        <div className="img-wrapper  mx-auto md:w-[120px] md:h-[120px]">
           <Image
             src={album.images[1].url}
             height={album.images[1].height}
@@ -265,19 +167,20 @@ const ExpandedAlbumDisplay = ({ album }: { album: Album }) => {
             alt={album.name}
           />
         </div>
-        <div className="flex flex-col w-full">
+        <div className="flex flex-col w-full truncate">
           <h4 className="truncate">{album.name}</h4>
-          <div className="subtext text-xs sm:text-sm">
-            {toUppercase(album.album_type)} &#8226; {album.tracks.items.length}{" "}
-            Songs &#8226; Released {formatDate(album.release_date)}
+          <div className="subtext text-sm truncate">
+            {toUppercase(album.album_type)} &#8226; {album.tracks.items.length} Songs &#8226;
+            Released {formatDate(album.release_date)} &#8226;{" "}
+            {album.artists.map((artist) => artist.name).join(", ")}
           </div>
         </div>
       </div>
-      <div className={`grid grid-cols-1 md:grid-cols-2`}>
+      <div className={`grid grid-cols-1 md:grid-cols-2 truncate`}>
         {album.tracks.items.map((track) => (
           <div
             key={track.id}
-            className={cx({
+            className={cx("flex w-full truncate", {
               "col-span-full": album.total_tracks < 2,
             })}
           >
@@ -296,8 +199,6 @@ const ExpandedAlbumDisplay = ({ album }: { album: Album }) => {
 const formatDate = (input) => {
   const date = new Date(input);
   if (!isNaN(date.getTime())) {
-    return (
-      date.getMonth() + 1 + "-" + date.getDate() + "-" + date.getFullYear()
-    );
+    return date.getMonth() + 1 + "-" + date.getDate() + "-" + date.getFullYear();
   }
 };

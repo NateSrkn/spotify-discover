@@ -19,10 +19,7 @@ export default function Home({ session }: HomeProps) {
     termLength: "short_term",
   });
   const [activeArtist, setActiveArtist] = useState<string>(null);
-  const { data: current_selection, isFetched } = useTopItems(
-    options.type,
-    options.termLength
-  );
+  const { data: current_selection, isFetched } = useTopItems(options.type, options.termLength);
   const { data: nowPlaying } = useNowPlaying();
   const types = ["tracks", "artists"];
   const titles = {
@@ -69,6 +66,7 @@ export default function Home({ session }: HomeProps) {
         />
       </div>
       <hr className="w-full border-1 border-green-custom mt-2 mb-4" />
+
       <ul className="flex flex-col gap-4">
         {isFetched &&
           current_selection.items.map((item) => {
@@ -108,12 +106,12 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   await queryClient.prefetchQuery("nowPlaying", () => getNowPlaying(session));
   await queryClient.prefetchQuery(
     ["artists", "short_term"],
-    () => getTopItems({ type: "artists", termLength: "short_term" }, session),
+    () => getTopItems({ type: "artists", time_range: "short_term" }, session),
     queryConfig
   );
   await queryClient.prefetchQuery(
     ["tracks", "short_term"],
-    () => getTopItems({ type: "tracks", termLength: "short_term" }, session),
+    () => getTopItems({ type: "tracks", time_range: "short_term" }, session),
     queryConfig
   );
   return {
