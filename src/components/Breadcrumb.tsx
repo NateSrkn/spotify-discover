@@ -5,7 +5,7 @@ export const Breadcrumb = ({ crumb, isActive, onClick = null }) => {
   return (
     <div className="relative group">
       <div
-        className={cx("img-wrapper is-rounded xs", {
+        className={cx("img-wrapper breadcrumb is-rounded", {
           "border-2 dark:border-white border-black": isActive,
           "cursor-pointer": onClick,
         })}

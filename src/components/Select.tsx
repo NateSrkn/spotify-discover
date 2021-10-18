@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { FiChevronUp, FiChevronDown } from "react-icons/fi";
+import { Button } from ".";
 import { useTimeout } from "../hooks";
 interface SelectProps {
   options: Array<{ label: string; value: string }>;
@@ -21,44 +22,44 @@ export const Select = ({ options, onClick, defaultValue }: SelectProps) => {
   const onFocusHandler = () => handleClearTimeout();
 
   return (
-    <div
-      className="relative text-base sm:text-lg"
-      onBlur={onBlurHandler}
-      onFocus={onFocusHandler}
-    >
-      <button
+    <div className="relative text-base sm:text-lg" onBlur={onBlurHandler} onFocus={onFocusHandler}>
+      <Button
         onClick={() => setIsOpen(!isOpen)}
+        icon={isOpen ? FiChevronUp : FiChevronDown}
+        iconPosition="right"
         aria-haspopup="true"
         aria-expanded={isOpen}
-        className="bg-gray-200 dark:bg-faded-green p-2 rounded-md  font-medium"
+        style={{
+          fontSize: "1rem",
+        }}
       >
-        <span className="flex gap-2 items-center">
-          {selected.label}{" "}
-          {isOpen ? <FiChevronUp size={17} /> : <FiChevronDown size={17} />}
-        </span>
-      </button>
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute top-full z-50 bg-gray-200 dark:bg-faded-green p-2 w-max rounded-md mt-2 shadow-lg flex flex-col items-start"
-          >
-            {options
-              .filter((option) => option.value !== selected.value)
-              .map((option) => (
-                <motion.button
-                  key={option.value}
-                  onClick={() => handleClick(option)}
-                  className="hover:bg-gray-100 dark:hover:bg-green-custom w-full text-left p-1 rounded-sm"
-                >
-                  {option.label}
-                </motion.button>
-              ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
+        {selected.label}
+      </Button>
+
+      {isOpen && (
+        <div
+          className="absolute top-full z-50 dark:bg-green-custom bg-gray-100 p-1 w-max rounded-md mt-2 shadow-lg flex flex-col items-start"
+          style={{
+            fontSize: "1rem",
+          }}
+        >
+          {options
+            .filter((option) => option.value !== selected.value)
+            .map((option) => (
+              <Button
+                key={option.value}
+                onClick={() => handleClick(option)}
+                style={{
+                  justifyContent: "flex-start",
+                  textAlign: "left",
+                  fontSize: "1rem",
+                }}
+              >
+                {option.label}
+              </Button>
+            ))}
+        </div>
+      )}
     </div>
   );
 };

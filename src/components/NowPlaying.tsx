@@ -22,13 +22,9 @@ export const NowPlaying = () => {
             {nowPlaying.name}
           </a>
         ) : (
-          <p className="text-gray-800 dark:text-gray-200 font-medium">
-            Not Playing
-          </p>
+          <p className="text-gray-800 dark:text-gray-200 font-medium">Not Playing</p>
         )}
-        <span className="mx-2 text-gray-500 dark:text-pewter-blue hidden sm:block">
-          {" – "}
-        </span>
+        <span className="mx-2 text-gray-500 dark:text-pewter-blue hidden sm:block">{" – "}</span>
         <p className="text-gray-500 dark:text-pewter-blue max-w-max truncate">
           {nowPlaying?.artists?.array.map((a, index) => (
             <React.Fragment key={a.id}>

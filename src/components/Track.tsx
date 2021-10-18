@@ -8,6 +8,7 @@ import { FiPlay, FiPause } from "react-icons/fi";
 export const Track = ({ track }: { track: SimpleTrack }) => {
   const { updateAudio, currentlyPlaying, isPlaying } = useContext(AudioContext);
   const isCurrentTrack = currentlyPlaying?.id === track.id;
+  const isPlayable = !!track.preview_url;
   return (
     <div
       className={cx(
@@ -16,10 +17,10 @@ export const Track = ({ track }: { track: SimpleTrack }) => {
           "text-spotify-green": isCurrentTrack,
         }
       )}
-      onClick={() => updateAudio(track)}
+      onClick={isPlayable ? () => updateAudio(track) : null}
     >
       <div className="flex flex-row items-center gap-4">
-        <div className="md:w-28 md:h-28 w-16 h-16 shadow-md flex-shrink-0">
+        <div className="img-wrapper artist">
           <Image
             src={track.images[0]?.url}
             height={track.images[0]?.height}
@@ -33,7 +34,10 @@ export const Track = ({ track }: { track: SimpleTrack }) => {
             {track.artists.map((a) => a.name).join(", ")}
           </div>
         </div>
-        <IconHandler isCurrentTrack={isCurrentTrack} isPlaying={isPlaying} />
+        {!isPlayable && (
+          <div className="badge p-1 rounded-md absolute top-2 right-2">No Preview Available</div>
+        )}
+        {isPlayable && <IconHandler isCurrentTrack={isCurrentTrack} isPlaying={isPlaying} />}
       </div>
     </div>
   );
@@ -50,38 +54,37 @@ export const MiniTrack = ({
 }) => {
   const { updateAudio, currentlyPlaying, isPlaying } = useContext(AudioContext);
   const isCurrentTrack = currentlyPlaying?.id === track.id;
+  const isPlayable = !!track.preview_url;
   return (
     <div
       className={cx(
-        "w-full hover:bg-gray-100 dark:hover:bg-green-custom p-1 cursor-pointer rounded-md transition-all mini-track",
+        "w-full hover:bg-gray-100 dark:hover:bg-green-custom p-1 cursor-pointer rounded-sm transition-all mini-track",
         {
           "text-spotify-green": isCurrentTrack,
-          "p-2": !hasImage,
+          "py-2 px-1": !hasImage,
         }
       )}
       title={track.name}
       onClick={() => updateAudio(track)}
     >
-      <div className="flex items-center gap-2">
-        {isNumbered && (
-          <div className="text-xs subtext proportional-nums">
-            {track.track_number}.
-          </div>
-        )}
-        <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 w-full">
+        {isNumbered && <div className="text-xs subtext tabular-nums">{track.track_number}.</div>}
+        <div className="flex items-center gap-4 w-full truncate">
           {hasImage && (
-            <div className="img-wrapper xs">
+            <div className="img-wrapper breadcrumb">
               <Image
-                src={track.images[0].url}
-                height={track.images[0].height}
-                width={track.images[0].width}
+                src={track.images[0]?.url}
+                height={track.images[0]?.height}
+                width={track.images[0]?.width}
                 alt={track.name}
               />
             </div>
           )}
-          <div className="card-sm-text">{track.name}</div>
+          <div className="card-sm-text truncate">{track.name}</div>
         </div>
-        <IconHandler isCurrentTrack={isCurrentTrack} isPlaying={isPlaying} />
+
+        {!isPlayable && <div className="badge min-w-max p-1 rounded-md">No Preview Available</div>}
+        {isPlayable && <IconHandler isCurrentTrack={isCurrentTrack} isPlaying={isPlaying} />}
       </div>
     </div>
   );
