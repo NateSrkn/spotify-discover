@@ -92,9 +92,9 @@ export const ExpandableCard = ({ baseData, isOpen, onClick }: ExpandableCardProp
             })}
           >
             <Image
-              src={images[0].url}
-              width={images[0].width}
-              height={images[0].height}
+              src={images[0]?.url}
+              width={images[0]?.width}
+              height={images[0]?.height}
               alt={name}
             />
           </div>
