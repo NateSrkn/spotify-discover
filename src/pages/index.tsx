@@ -1,11 +1,11 @@
 import { Session } from "next-auth";
 import { getSession } from "next-auth/client";
 import { GetServerSideProps } from "next";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { toUppercase } from "../util/helpers";
-import { QueryClient, dehydrate } from "react-query";
-import { useTopItems, useNowPlaying } from "../hooks";
-import { Track, Select, Layout } from "../components";
+import { QueryClient, dehydrate, InfiniteQueryObserverOptions } from "react-query";
+import { useNowPlaying, useInfiniteTopItems, useMultiRef } from "../hooks";
+import { Track, Select, Layout, Button } from "../components";
 import { getNowPlaying, getTopItems } from "../util/spotify";
 import { ExpandableCard } from "../components/ExpandableCard";
 import { Options } from "../util/types/spotify";
@@ -19,7 +19,19 @@ export default function Home({ session }: HomeProps) {
     termLength: "short_term",
   });
   const [activeArtist, setActiveArtist] = useState<string>(null);
-  const { data: current_selection, isFetched } = useTopItems(options.type, options.termLength);
+  const [setRef, getRef] = useMultiRef();
+
+  const scrollToArtist = (id) => {
+    const artist = getRef(id);
+    setTimeout(() => artist.scrollIntoView({ behavior: "smooth" }), 200);
+  };
+
+  const {
+    data: current_selection,
+    isFetched,
+    fetchNextPage,
+    hasNextPage,
+  } = useInfiniteTopItems(options.type, options.termLength);
   const { data: nowPlaying } = useNowPlaying();
   const types = ["tracks", "artists"];
   const titles = {
@@ -69,21 +81,38 @@ export default function Home({ session }: HomeProps) {
 
       <ul className="flex flex-col gap-4">
         {isFetched &&
-          current_selection.items.map((item) => {
-            if (item.type === "track") {
-              return <Track track={item} key={item.id} />;
-            }
-            const isActive = item.id === activeArtist;
-            return (
-              <ExpandableCard
-                key={item.id}
-                baseData={item}
-                isOpen={isActive}
-                onClick={(id) => setActiveArtist(id)}
-              />
-            );
-          })}
+          current_selection.pages.map((page) =>
+            page.items.map((item) => {
+              if (item.type === "track") {
+                return <Track track={item} key={item.id} />;
+              }
+              const isActive = item.id === activeArtist;
+              return (
+                <li key={item.id} ref={(node) => setRef(node, item.id)}>
+                  <ExpandableCard
+                    baseData={item}
+                    isOpen={isActive}
+                    onClick={(id) => {
+                      setActiveArtist(id);
+                      scrollToArtist(id);
+                    }}
+                    handleScrollTo={() => scrollToArtist(item.id)}
+                  />
+                </li>
+              );
+            })
+          )}
       </ul>
+      {hasNextPage && (
+        <Button
+          onClick={fetchNextPage}
+          style={{
+            marginTop: "1.25rem",
+          }}
+        >
+          See More
+        </Button>
+      )}
     </Layout>
   );
 }
@@ -99,22 +128,24 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     };
   }
   const queryClient = new QueryClient();
-  const queryConfig = {
+  const queryConfig: InfiniteQueryObserverOptions = {
     staleTime: Infinity,
     cacheTime: Infinity,
+    getNextPageParam: ({ next }) => next,
   };
   await queryClient.prefetchQuery("nowPlaying", () => getNowPlaying(session));
-  await queryClient.prefetchQuery(
+  await queryClient.prefetchInfiniteQuery(
     ["artists", "short_term"],
     () => getTopItems({ type: "artists", time_range: "short_term" }, session),
     queryConfig
   );
-  await queryClient.prefetchQuery(
+  await queryClient.prefetchInfiniteQuery(
     ["tracks", "short_term"],
     () => getTopItems({ type: "tracks", time_range: "short_term" }, session),
     queryConfig
   );
+
   return {
-    props: { session, dehydratedState: dehydrate(queryClient) },
+    props: { session, dehydratedState: JSON.parse(JSON.stringify(dehydrate(queryClient))) },
   };
 };

@@ -122,6 +122,16 @@ export const getArtistData = async (artist_id, session) => {
     })
   );
   const [artist, related_artists, top_tracks, albums] = await Promise.all(requests);
+  for (let i = albums.data.offset + albums.data.limit; i < albums.data.total; i += i) {
+    const { data } = await request({
+      url: `artists/${artist_id}/albums`,
+      params: {
+        offset: i,
+      },
+      headers: { Authorization: `Bearer ${session.accessToken}` },
+    });
+    albums.data.items = [...albums.data.items, ...data.items];
+  }
   return {
     ...simplifyStructure(artist.data),
     related_artists: related_artists.data.artists.map((a) => simplifyStructure(a)),
@@ -133,16 +143,17 @@ export const getArtistData = async (artist_id, session) => {
 };
 
 export const getTopItems = async (
-  options: { type: Options["type"]; time_range: Options["termLength"] },
+  options: { type: Options["type"]; time_range: Options["termLength"]; offset?: string },
   session: Session
 ): Promise<PagingObject<SimpleArtist | SimpleTrack>> => {
-  const { type = "artists", time_range = "short_term" } = options;
+  const { type = "artists", time_range = "short_term", offset = "0" } = options;
   const { data } = await request({
     url: `/me/top/${type}`,
     headers: { Authorization: `Bearer ${session.accessToken}` },
     params: {
       time_range,
       limit: 20,
+      offset,
     },
   });
 
@@ -151,6 +162,7 @@ export const getTopItems = async (
 };
 
 export const getAlbum = (id, session): AxiosPromise<Album | Album[]> => {
+  if (!id) return;
   const isMultiple = id.includes(",");
   const params: { [key: string]: any } = {};
   if (isMultiple) {
@@ -164,14 +176,15 @@ export const getAlbum = (id, session): AxiosPromise<Album | Album[]> => {
 };
 
 export const albumReducer = (acc, album: Album): Collection => {
-  if (!acc[album.album_type]) {
-    acc[album.album_type] = {
+  const key = album.album_group;
+  if (!acc[key]) {
+    acc[key] = {
       ids: [],
       list: [],
     };
   }
-  acc[album.album_type].ids.push(album.id);
-  acc[album.album_type].list.push(album);
+  acc[key].ids.push(album.id);
+  acc[key].list.push(album);
   return acc;
 };
 

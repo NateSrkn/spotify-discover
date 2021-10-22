@@ -19,3 +19,11 @@ export const pullInitials = (name: string) => {
 export const toUppercase = (string: string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);
 };
+
+export const chunkArray = (array, chunkSize) => {
+  let temp = [];
+  for (let i = 0, { length } = array; i < length; i += chunkSize) {
+    temp = [...temp, array.slice(i, i + chunkSize)];
+  }
+  return temp;
+};

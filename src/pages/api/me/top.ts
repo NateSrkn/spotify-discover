@@ -4,10 +4,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getTopItems } from "../../../util/spotify";
 import { Options } from "../../../util/types/spotify";
 
-export default async function topItems(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function topItems(req: NextApiRequest, res: NextApiResponse) {
   try {
     const session: Session = await getSession({ req });
     if (!session) throw res.status(401).json({ message: "Unauthorized" });
@@ -16,6 +13,7 @@ export default async function topItems(
       {
         type: query.type as Options["type"],
         time_range: query.time_range as Options["termLength"],
+        offset: query.offset as string,
       },
       session
     );

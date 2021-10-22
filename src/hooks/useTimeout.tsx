@@ -1,19 +1,14 @@
-import { useState } from "react";
+import { useRef } from "react";
 
-export const useTimeout = (): [
-  (callback: Function, delay?: number | null) => void,
-  () => void
-] => {
-  const [timeout, createTimeout] = useState(null);
-
+export const useTimeout = (): [(callback: Function, delay?: number | null) => void, () => void] => {
+  const timeout = useRef(null);
   const handleSetTimeout = (callback, delay = 500) => {
     const id = delay ? setTimeout(callback, delay) : setTimeout(callback);
-    createTimeout(id);
+    timeout.current = id;
   };
 
   const handleClearTimeout = () => {
-    clearTimeout(timeout);
-    createTimeout(null);
+    clearTimeout(timeout.current);
   };
 
   return [handleSetTimeout, handleClearTimeout];
