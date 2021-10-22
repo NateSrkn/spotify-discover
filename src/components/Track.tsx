@@ -65,10 +65,10 @@ export const MiniTrack = ({
         }
       )}
       title={track.name}
-      onClick={() => updateAudio(track)}
+      onClick={isPlayable ? () => updateAudio(track) : null}
     >
       <div className="flex items-center gap-2 w-full">
-        {isNumbered && <div className="text-xs subtext tabular-nums">{track.track_number}.</div>}
+        {isNumbered && <div className="text-xs subtext">{track.track_number}.</div>}
         <div className="flex items-center gap-4 w-full truncate">
           {hasImage && (
             <div className="img-wrapper breadcrumb">

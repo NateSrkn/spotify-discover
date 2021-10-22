@@ -7,14 +7,20 @@ import cx from "classnames";
 import { Image, Button } from ".";
 import { toUppercase } from "../util/helpers";
 import { simplifyStructure } from "../util/spotify";
-import { FiChevronLeft, FiX } from "react-icons/fi";
+import { FiChevronLeft } from "react-icons/fi";
 import { TrackList, AlbumList } from ".";
 interface ExpandableCardProps {
   baseData: SimpleArtist;
   isOpen: boolean;
   onClick: (id: string) => void;
+  handleScrollTo: () => void;
 }
-export const ExpandableCard = ({ baseData, isOpen, onClick }: ExpandableCardProps) => {
+export const ExpandableCard = ({
+  baseData,
+  isOpen,
+  onClick,
+  handleScrollTo,
+}: ExpandableCardProps) => {
   const queryClient = useQueryClient();
   const [handleSetTimeout, handleClearTimeout] = useTimeout();
   const [activeArtist, setActiveArtist] = useState<SimpleArtist | ExpandedArtist>(baseData);
@@ -30,12 +36,13 @@ export const ExpandableCard = ({ baseData, isOpen, onClick }: ExpandableCardProp
   });
   const { name, id, genres, images } = artist;
   useEffect(() => !isOpen && setActiveArtist(baseData), [isOpen, baseData]);
-  const isBreadcrumb = (item) => item.id !== baseData.id;
+  const isBreadcrumb = artist.id !== baseData.id;
 
   const handleAddBreadcrumb = (item) => {
     if (breadcrumbs.some((b) => b.id === item.id)) return;
     setActiveArtist(item);
     setBreadcrumbs((prev) => [...prev, item]);
+    handleScrollTo();
   };
 
   const handleRemoveBreadcrumb = (item) => {
@@ -53,7 +60,13 @@ export const ExpandableCard = ({ baseData, isOpen, onClick }: ExpandableCardProp
   const handleMouseEnter = (id) => handleSetTimeout(() => prefetchArtist(queryClient, id), 500);
 
   const handleClick = () => (isOpen ? onClick(null) : onClick(id));
+
+  const handleSetActiveAlbum = (album) => {
+    setActiveAlbum(album);
+    handleScrollTo();
+  };
   const shouldDisplay = isOpen && isFetched && !activeAlbum;
+
   return (
     <div
       className="transition-all"
@@ -77,9 +90,10 @@ export const ExpandableCard = ({ baseData, isOpen, onClick }: ExpandableCardProp
             />
           ))}
       </div>
+
       <div className="bg-gray-200 dark:bg-faded-green rounded-md">
         <div
-          className={cx("p-5 flex items-center", {
+          className={cx("p-5 flex items-center relative", {
             "border-b border-green-custom": isOpen,
           })}
           onClick={handleClick}
@@ -92,9 +106,9 @@ export const ExpandableCard = ({ baseData, isOpen, onClick }: ExpandableCardProp
             })}
           >
             <Image
-              src={images[0].url}
-              width={images[0].width}
-              height={images[0].height}
+              src={images[0]?.url}
+              width={images[0]?.width}
+              height={images[0]?.height}
               alt={name}
             />
           </div>
@@ -102,7 +116,13 @@ export const ExpandableCard = ({ baseData, isOpen, onClick }: ExpandableCardProp
             <h3 className="title">{name}</h3>
             <p className="subtext text-sm truncate">{genres.join(", ")}</p>
           </div>
+          {isBreadcrumb && isOpen && (
+            <div className="flex absolute top-2 right-2 gap-2">
+              <Button onClick={() => handleRemoveBreadcrumb(artist)}>Remove</Button>
+            </div>
+          )}
         </div>
+
         <div
           className={cx("transition-all opacity-0 duration-500", {
             "opacity-100": isOpen,
@@ -121,12 +141,17 @@ export const ExpandableCard = ({ baseData, isOpen, onClick }: ExpandableCardProp
                 />
                 <AlbumList
                   albums={artist.collection?.single?.list}
-                  title="Singles"
+                  title="Singles and EPs"
                   onClick={setActiveAlbum}
                 />
                 <AlbumList
                   albums={artist.collection?.compilation?.list}
                   title="Compilations"
+                  onClick={setActiveAlbum}
+                />
+                <AlbumList
+                  albums={artist.collection?.appears_on?.list}
+                  title="Appears On"
                   onClick={setActiveAlbum}
                 />
               </div>
@@ -143,7 +168,7 @@ export const ExpandableCard = ({ baseData, isOpen, onClick }: ExpandableCardProp
           )}
           {isOpen && activeAlbum && (
             <div className="p-5">
-              <Button onClick={() => setActiveAlbum(null)} icon={FiChevronLeft}>
+              <Button onClick={() => handleSetActiveAlbum(null)} icon={FiChevronLeft}>
                 Back
               </Button>
               <ExpandedAlbumDisplay album={album} />
@@ -156,6 +181,8 @@ export const ExpandableCard = ({ baseData, isOpen, onClick }: ExpandableCardProp
 };
 
 const ExpandedAlbumDisplay = ({ album }: { album: Album }) => {
+  let rowCount = Math.floor(album.total_tracks / 2);
+  if (album.total_tracks % 2) rowCount++;
   return (
     <div className="col-span-full">
       <div className="py-4 flex gap-2 items-center flex-wrap md:flex-nowrap w-full">
@@ -170,14 +197,19 @@ const ExpandedAlbumDisplay = ({ album }: { album: Album }) => {
         <div className="flex flex-col w-full truncate">
           <h4 className="truncate">{album.name}</h4>
           <div className="subtext text-sm truncate">
-            {toUppercase(album.album_type)} &#8226; {album.tracks.items.length} Songs &#8226;
-            Released {formatDate(album.release_date)} &#8226;{" "}
+            {toUppercase(album.album_type)} &#8226; {album.total_tracks} Song(s) &#8226; Released{" "}
+            {formatDate(album.release_date)} &#8226;{" "}
             {album.artists.map((artist) => artist.name).join(", ")}
           </div>
         </div>
       </div>
-      <div className={`grid grid-cols-1 md:grid-cols-2 truncate`}>
-        {album.tracks.items.map((track) => (
+      <div
+        className={`grid grid-cols-1 md:grid-cols-2 md:grid-flow-col truncate`}
+        style={{
+          gridTemplateRows: `repeat(${rowCount}, minmax(0, 1fr))`,
+        }}
+      >
+        {album.tracks?.items?.map((track) => (
           <div
             key={track.id}
             className={cx("flex w-full truncate", {

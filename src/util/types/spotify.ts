@@ -5,6 +5,7 @@ export interface PagingObject<Type> {
   offset: number;
   previous?: string;
   items: Array<Type>;
+  total: number;
 }
 
 export interface AlbumBase {
@@ -123,6 +124,7 @@ export interface Album extends AlbumBase {
   genres: string[];
   popularity: number;
   tracks: PagingObject<Track>;
+  album_group?: string;
 }
 
 export interface Device {
@@ -212,6 +214,10 @@ export interface Collection {
     list: Album[];
   };
   compilation?: {
+    id: string[];
+    list: Album[];
+  };
+  appears_on?: {
     id: string[];
     list: Album[];
   };
