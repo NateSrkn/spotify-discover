@@ -23,7 +23,9 @@ export default function Home({ session }: HomeProps) {
 
   const scrollToArtist = (id) => {
     const artist = getRef(id);
-    setTimeout(() => artist.scrollIntoView({ behavior: "smooth" }), 200);
+    if (artist) {
+      setTimeout(() => artist.scrollIntoView({ behavior: "smooth" }), 200);
+    }
   };
 
   const {
