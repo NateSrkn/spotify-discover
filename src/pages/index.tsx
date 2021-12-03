@@ -10,11 +10,7 @@ import { getNowPlaying, getTopItems } from "../util/spotify";
 import { ExpandableCard } from "../components/ExpandableCard";
 import { Options } from "../util/types/spotify";
 
-interface HomeProps {
-  session: Session;
-}
-
-export default function Home({ session }: HomeProps) {
+export default function Home() {
   const [options, setOptions] = useState<Options>({
     type: "artists",
     termLength: "short_term",
@@ -53,7 +49,6 @@ export default function Home({ session }: HomeProps) {
 
   return (
     <Layout
-      session={session}
       title={`${toUppercase(types.find((type) => type === options.type))} ${
         nowPlaying.isListening ? `| ${nowPlaying.compact}` : ""
       }`}

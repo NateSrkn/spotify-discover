@@ -21,7 +21,7 @@ export const Layout = ({ children, session = null, ...customMeta }) => {
         <meta name="twitter:title" content={meta.title} />
         <meta name="twitter:description" content={meta.description} />
       </Head>
-      <Header session={session} />
+      <Header />
       <main className="flex-1 w-full min-h-screen">{children}</main>
       <Footer />
     </div>

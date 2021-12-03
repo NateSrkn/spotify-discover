@@ -1,11 +1,12 @@
 import { Image, Button, DarkModeToggle, NowPlaying } from ".";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import React from "react";
 
-export const Header = ({ session }) => {
+export const Header = () => {
+  const { status, data: session } = useSession();
   return (
     <header className="flex flex-col py-4 w-full">
-      {session ? (
+      {status === "authenticated" ? (
         <React.Fragment>
           <div className="flex items-start justify-between">
             <div className="flex gap-4 items-center">
