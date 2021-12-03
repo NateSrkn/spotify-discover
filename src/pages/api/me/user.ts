@@ -1,4 +1,4 @@
-import { getSession } from "next-auth/client";
+import { getSession } from "next-auth/react";
 import { Session } from "next-auth";
 import { request } from "../../../util/api";
 import { NextApiRequest, NextApiResponse } from "next";

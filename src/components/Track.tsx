@@ -61,7 +61,7 @@ export const MiniTrack = ({
         "w-full hover:bg-gray-100 dark:hover:bg-green-custom p-1 cursor-pointer rounded-sm transition-all mini-track",
         {
           "text-spotify-green": isCurrentTrack,
-          "py-2 px-1": !hasImage,
+          "p-3": !hasImage,
         }
       )}
       title={track.name}

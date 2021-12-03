@@ -1,4 +1,4 @@
-import { signIn, getSession } from "next-auth/client";
+import { signIn, getSession } from "next-auth/react";
 import { Button, Layout } from "../components";
 export default function LoginPage() {
   return (
@@ -7,8 +7,8 @@ export default function LoginPage() {
         <h4 className="text-2xl font-bold">Welcome to Crumbs</h4>
         <div className="text-lg font-medium">
           <p className="mb-4">
-            Crumbs is a simple, and fast way for you to discover music based on
-            what you already like.
+            Crumbs is a simple, and fast way for you to discover music based on what you already
+            like.
           </p>
         </div>
         <Button onClick={() => signIn("spotify")}>Sign in</Button>
@@ -21,6 +21,9 @@ export async function getServerSideProps({ req }) {
   const session = await getSession({ req });
   if (session) {
     return {
+      props: {
+        session,
+      },
       redirect: {
         destination: "/",
         permanent: false,
@@ -28,6 +31,8 @@ export async function getServerSideProps({ req }) {
     };
   }
   return {
-    props: {},
+    props: {
+      session,
+    },
   };
 }

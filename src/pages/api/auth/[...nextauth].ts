@@ -1,10 +1,10 @@
-import Providers from "next-auth/providers";
+import Spotify from "next-auth/providers/spotify";
 import NextAuth from "next-auth";
 import { refreshToken } from "../../../util/spotify";
 
 export default NextAuth({
   providers: [
-    Providers.Spotify({
+    Spotify({
       clientId: process.env.NEXT_PUBLIC_CLIENT_ID,
       clientSecret: process.env.NEXT_PUBLIC_CLIENT_SECRET,
       scope: [
@@ -16,11 +16,12 @@ export default NextAuth({
       ].join(","),
     }),
   ],
+  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async jwt(token, user, account) {
+    async jwt({ token, user, account }) {
       if (account && user) {
         return {
-          accessToken: account.accessToken,
+          accessToken: account.access_token,
           accessTokenExpires: Date.now() + <number>account.expires_in * 1000,
           refreshToken: account.refresh_token,
           user,
@@ -33,10 +34,10 @@ export default NextAuth({
 
       return await refreshToken(token);
     },
-    async session(session, token) {
+    async session({ session, token }) {
       if (token) {
         session.user = token.user;
-        session.expires = new Date(token.accessTokenExpires);
+        session.expires = new Date(token.accessTokenExpires).toDateString();
         session.accessToken = token.accessToken;
         session.error = token.error;
       }

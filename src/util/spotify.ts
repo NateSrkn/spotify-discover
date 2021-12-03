@@ -10,10 +10,6 @@ import {
   Collection,
   PagingObject,
   Options,
-  SimplifiedAlbumObject,
-  TrackBase,
-  ArtistBase,
-  AlbumBase,
 } from "./types/spotify";
 import { sanitizeObject } from "./helpers";
 import { AxiosPromise } from "axios";
@@ -113,7 +109,7 @@ const buildArtistRequests = (artist_id) => {
   });
 };
 
-export const getArtistData = async (artist_id, session) => {
+export const getArtistData = async (artist_id, session: Session) => {
   let configs = buildArtistRequests(artist_id);
   const requests = configs.map((config) =>
     request({

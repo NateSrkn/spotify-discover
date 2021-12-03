@@ -1,11 +1,8 @@
-import { getSession } from "next-auth/client";
+import { getSession } from "next-auth/react";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getNowPlaying } from "../../../util/spotify";
 
-export default async function nowPlaying(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function nowPlaying(req: NextApiRequest, res: NextApiResponse) {
   try {
     const session = await getSession({ req });
     if (!session) throw res.status(401).json({ message: "Unauthorized" });

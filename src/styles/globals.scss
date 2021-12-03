@@ -1,65 +1,94 @@
-@import "fonts";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-html,
-body {
-  padding: 0;
-  margin: 0;
-}
+@layer base {
+  @import "fonts";
+  html,
+  body {
+    padding: 0;
+    margin: 0;
+  }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 
-* {
-  box-sizing: border-box;
-}
-
-.subtext {
-  @apply text-gray-500 dark:text-pewter-blue text-sm;
-}
-
-.bordered-item {
-  @apply border-gray-200 dark:border-gray-800;
-}
-
-.bg-hover {
-  @apply hover:bg-gray-200 dark:hover:bg-green-custom transition-all;
-}
-
-ul {
-  .list-border {
-    @apply border-t border-r border-l last:border-b;
+  * {
+    box-sizing: border-box;
+  }
+  h4 {
+    @apply text-lg font-medium;
   }
 }
 
-.base-link {
-  @apply text-gray-500 hover:text-gray-600 transition;
-}
+@layer components {
+  .subtext {
+    @apply text-gray-500 dark:text-pewter-blue text-sm;
+  }
+  .button {
+    @apply relative text-sm inline-flex items-center py-2 px-3 rounded;
+  }
+  .background-hover {
+    @apply dark:bg-green-custom dark:bg-opacity-20 transition-all dark:hover:bg-opacity-100 bg-gray-100 hover:bg-opacity-50;
+  }
+  .base-link {
+    @apply text-gray-500 hover:text-gray-600 transition;
+  }
+  .bordered-item {
+    @apply border-gray-200 dark:border-gray-800;
+  }
+  .bg-hover {
+    @apply hover:bg-gray-200 dark:hover:bg-green-custom transition-all;
+  }
+  .title {
+    @apply text-base truncate;
+  }
+  .filler-img {
+    @apply w-full h-full bg-gray-400 flex-shrink-0 flex justify-center items-center shadow-md;
+  }
+  .card-sm-text {
+    @apply font-medium truncate text-sm;
+  }
+  .badge {
+    @extend .subtext;
+    @apply uppercase bg-gray-100 dark:bg-faded-green;
+    font-size: 10px;
+  }
 
-.button {
-  @apply text-sm font-normal dark:text-white inline-flex items-center relative;
-  padding: 8px 12px;
-  border-radius: 4px;
-}
-
-.background-hover {
-  @apply dark:bg-green-custom dark:bg-opacity-20 transition-all dark:hover:bg-opacity-100 bg-gray-100 hover:bg-opacity-50;
-}
-
-.img-wrapper {
-  @apply flex shadow-md flex-shrink-0;
-  &.artist {
-    width: 80px;
-    height: 80px;
-    @media (min-width: 640px) {
-      width: 100px;
-      height: 100px;
+  ul {
+    .list-border {
+      @apply border-t border-r border-l last:border-b;
     }
-    &.is-expanded {
+  }
+
+  .img-wrapper {
+    @apply flex shadow-md flex-shrink-0;
+    &.artist {
+      @extend .is-rounded;
+      width: 80px;
+      height: 80px;
+      @media (min-width: 640px) {
+        width: 100px;
+        height: 100px;
+      }
+      &.is-expanded {
+        width: 100px;
+        height: 100px;
+        @media (min-width: 640px) {
+          width: 120px;
+          height: 120px;
+        }
+      }
+    }
+
+    &.breadcrumb {
+      width: 40px;
+      height: 40px;
+    }
+
+    &.album {
       width: 100px;
       height: 100px;
       @media (min-width: 640px) {
@@ -67,68 +96,36 @@ ul {
         height: 120px;
       }
     }
-  }
 
-  &.breadcrumb {
-    width: 40px;
-    height: 40px;
-  }
+    &.is-rounded {
+      @apply rounded-full overflow-hidden;
+    }
 
-  &.album {
-    width: 100px;
-    height: 100px;
-    @media (min-width: 640px) {
-      width: 120px;
-      height: 120px;
+    img {
+      @apply object-cover object-center w-full h-full;
     }
   }
 
-  &.is-rounded {
-    @apply rounded-full overflow-hidden;
-  }
-
-  img {
-    @apply object-cover object-center w-full h-full;
-  }
-}
-
-.title {
-  @apply text-base sm:text-lg truncate;
-}
-
-.filler-img {
-  @apply w-full h-full bg-gray-400 flex-shrink-0 flex justify-center items-center shadow-md;
-}
-
-.card-sm-text {
-  @apply font-medium truncate text-sm;
-}
-
-.badge {
-  @extend .subtext;
-  @apply uppercase bg-gray-100 dark:bg-faded-green;
-  font-size: 10px;
-}
-
-.track,
-.mini-track {
-  .icon {
-    @apply ml-auto mr-2 text-black dark:text-white fill-current;
-    visibility: hidden;
-    &.is-active {
-      visibility: visible;
-    }
-  }
-
-  &:hover {
+  .track,
+  .mini-track {
     .icon {
-      visibility: visible;
+      @apply ml-auto mr-2 text-black dark:text-white fill-current;
+      visibility: hidden;
+      &.is-active {
+        visibility: visible;
+      }
+    }
+
+    &:hover {
+      .icon {
+        visibility: visible;
+      }
     }
   }
-}
-.sticky-header {
-  position: sticky;
-  z-index: 10;
-  top: 0;
-  backdrop-filter: saturate(180%) blur(20px);
+  .sticky-header {
+    position: sticky;
+    z-index: 10;
+    top: 0;
+    backdrop-filter: saturate(180%) blur(20px);
+  }
 }
