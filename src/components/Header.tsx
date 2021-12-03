@@ -1,5 +1,5 @@
 import { Image, Button, DarkModeToggle, NowPlaying } from ".";
-import { signOut } from "next-auth/client";
+import { signOut } from "next-auth/react";
 import React from "react";
 
 export const Header = ({ session }) => {

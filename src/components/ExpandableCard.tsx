@@ -20,6 +20,7 @@ export const ExpandableCard = ({
   isOpen,
   onClick,
   handleScrollTo,
+  ...rest
 }: ExpandableCardProps) => {
   const queryClient = useQueryClient();
   const [handleSetTimeout, handleClearTimeout] = useTimeout();
@@ -73,6 +74,7 @@ export const ExpandableCard = ({
       aria-selected={isOpen}
       aria-current={isOpen}
       aria-expanded={isOpen}
+      {...rest}
     >
       <div
         className={cx("transition-all duration-500", {
@@ -93,7 +95,7 @@ export const ExpandableCard = ({
 
       <div className="bg-gray-200 dark:bg-faded-green rounded-md">
         <div
-          className={cx("p-5 flex items-center relative", {
+          className={cx("p-5 flex items-center relative cursor-pointer", {
             "border-b border-green-custom": isOpen,
           })}
           onClick={handleClick}
@@ -186,7 +188,7 @@ const ExpandedAlbumDisplay = ({ album }: { album: Album }) => {
   return (
     <div className="col-span-full">
       <div className="py-4 flex gap-2 items-center flex-wrap md:flex-nowrap w-full">
-        <div className="img-wrapper  mx-auto md:w-[120px] md:h-[120px]">
+        <div className="img-wrapper  mx-auto md:w-[120px] md:h-[120px] ">
           <Image
             src={album.images[1].url}
             height={album.images[1].height}
@@ -204,7 +206,7 @@ const ExpandedAlbumDisplay = ({ album }: { album: Album }) => {
         </div>
       </div>
       <div
-        className={`grid grid-cols-1 md:grid-cols-2 md:grid-flow-col truncate`}
+        className={`grid grid-cols-1 md:grid-cols-2 md:grid-flow-col truncate gap-x-4`}
         style={{
           gridTemplateRows: `repeat(${rowCount}, minmax(0, 1fr))`,
         }}

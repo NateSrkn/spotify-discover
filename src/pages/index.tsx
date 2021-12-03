@@ -1,7 +1,7 @@
 import { Session } from "next-auth";
-import { getSession } from "next-auth/client";
+import { getSession } from "next-auth/react";
 import { GetServerSideProps } from "next";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { toUppercase } from "../util/helpers";
 import { QueryClient, dehydrate, InfiniteQueryObserverOptions } from "react-query";
 import { useNowPlaying, useInfiniteTopItems, useMultiRef } from "../hooks";
@@ -13,6 +13,7 @@ import { Options } from "../util/types/spotify";
 interface HomeProps {
   session: Session;
 }
+
 export default function Home({ session }: HomeProps) {
   const [options, setOptions] = useState<Options>({
     type: "artists",
@@ -30,6 +31,8 @@ export default function Home({ session }: HomeProps) {
 
   const {
     data: current_selection,
+    isLoading,
+    isError,
     isFetched,
     fetchNextPage,
     hasNextPage,
@@ -82,12 +85,14 @@ export default function Home({ session }: HomeProps) {
       <hr className="w-full border-1 border-green-custom mt-2 mb-4" />
 
       <ul className="flex flex-col gap-4">
+        {isLoading && <p>Loading...</p>}
         {isFetched &&
           current_selection.pages.map((page) =>
-            page.items.map((item) => {
+            page.items.map((item, index) => {
               if (item.type === "track") {
                 return <Track track={item} key={item.id} />;
               }
+
               const isActive = item.id === activeArtist;
               return (
                 <li key={item.id} ref={(node) => setRef(node, item.id)}>
@@ -139,11 +144,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   await queryClient.prefetchInfiniteQuery(
     ["artists", "short_term"],
     () => getTopItems({ type: "artists", time_range: "short_term" }, session),
-    queryConfig
-  );
-  await queryClient.prefetchInfiniteQuery(
-    ["tracks", "short_term"],
-    () => getTopItems({ type: "tracks", time_range: "short_term" }, session),
     queryConfig
   );
 
