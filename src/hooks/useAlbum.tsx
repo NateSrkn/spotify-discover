@@ -9,7 +9,6 @@ interface UseAlbumProps {
   isEnabled: boolean;
 }
 export const useAlbum = ({ album, isEnabled }: UseAlbumProps): UseQueryResult<Album> => {
-  const queryClient = useQueryClient();
   return useQuery(
     ["album", album?.id],
     async () => {
@@ -17,7 +16,7 @@ export const useAlbum = ({ album, isEnabled }: UseAlbumProps): UseQueryResult<Al
       return data;
     },
     {
-      enabled: isEnabled || queryClient.getQueryData(["album", album?.id]) === undefined,
+      enabled: isEnabled,
       placeholderData: album,
       staleTime: Infinity,
       cacheTime: Infinity,

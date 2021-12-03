@@ -8,6 +8,10 @@ export const Header = () => {
     <header className="flex flex-col py-4 w-full">
       {status === "authenticated" ? (
         <React.Fragment>
+          <div className="flex items-start justify-between mb-8">
+            <h3 className="text-xl font-bold">Crumbs</h3>
+            <DarkModeToggle />
+          </div>
           <div className="flex items-start justify-between">
             <div className="flex gap-4 items-center">
               <div className="overflow-hidden h-16 w-16 rounded-full">
@@ -18,7 +22,6 @@ export const Header = () => {
                 <Button onClick={() => signOut()}>Sign Out</Button>
               </div>
             </div>
-            <DarkModeToggle />
           </div>
           <div className="my-2">
             <NowPlaying />
