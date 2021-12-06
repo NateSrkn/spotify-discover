@@ -18,6 +18,13 @@ export const ArtistList = ({
   const handleMouseEnter = (artist) =>
     handleSetTimeout(() => prefetchArtist(queryClient, artist.id), 500);
 
+  const handleKeyPress = (event, artist) => {
+    event.stopPropagation();
+    if (event.key === "Enter") {
+      onClick(artist);
+    }
+  };
+
   return (
     <ExpandableList title={title} startingLength={title ? 10 : artists.length}>
       {artists.map((artist) => (
@@ -28,6 +35,8 @@ export const ArtistList = ({
           onClick={() => onClick(artist)}
           onMouseEnter={() => handleMouseEnter(artist)}
           onMouseLeave={handleClearTimeout}
+          onKeyPress={(event) => handleKeyPress(event, artist)}
+          tabIndex={0}
         >
           <div className="img-wrapper breadcrumb is-rounded">
             <Image

@@ -1,7 +1,7 @@
 import React from "react";
 interface IButton {
   children: React.ReactNode;
-  onClick: () => void;
+  action: () => void;
   icon?: React.ElementType;
   iconPosition?: "left" | "right";
   [key: string]: any;
@@ -9,19 +9,24 @@ interface IButton {
 
 export const Button = ({
   children,
-  onClick,
+  action,
   icon: Icon,
   iconPosition = "left",
   ...rest
 }: IButton) => {
   const handleClick = (event) => {
     event.stopPropagation();
-    onClick();
+    action();
+  };
+
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
   };
   return (
     <button
       className="button background-hover w-max hover:scale-105"
       onClick={handleClick}
+      onKeyPress={handleKeyPress}
       {...rest}
     >
       {Icon && iconPosition === "left" ? <Icon className="mr-1 text-xl" /> : null}

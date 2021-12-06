@@ -24,7 +24,7 @@ export const Select = ({ options, onClick, defaultValue }: SelectProps) => {
   return (
     <div className="relative text-base sm:text-lg" onBlur={onBlurHandler} onFocus={onFocusHandler}>
       <Button
-        onClick={() => setIsOpen(!isOpen)}
+        action={() => setIsOpen(!isOpen)}
         icon={isOpen ? FiChevronUp : FiChevronDown}
         iconPosition="right"
         aria-haspopup="true"
@@ -48,7 +48,7 @@ export const Select = ({ options, onClick, defaultValue }: SelectProps) => {
             .map((option) => (
               <Button
                 key={option.value}
-                onClick={() => handleClick(option)}
+                action={() => handleClick(option)}
                 style={{
                   justifyContent: "flex-start",
                   textAlign: "left",

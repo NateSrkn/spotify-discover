@@ -1,5 +1,6 @@
 import Head from "next/head";
 import { Footer, Header } from ".";
+import Controls from "./Controls";
 
 export const Layout = ({ children, session = null, ...customMeta }) => {
   const meta = {
@@ -23,6 +24,7 @@ export const Layout = ({ children, session = null, ...customMeta }) => {
       </Head>
       <Header />
       <main className="flex-1 w-full min-h-screen">{children}</main>
+      <Controls />
       <Footer />
     </div>
   );

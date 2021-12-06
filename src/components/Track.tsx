@@ -9,6 +9,13 @@ export const Track = ({ track }: { track: SimpleTrack }) => {
   const { updateAudio, currentlyPlaying, isPlaying } = useContext(AudioContext);
   const isCurrentTrack = currentlyPlaying?.id === track.id;
   const isPlayable = !!track.preview_url;
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    if (isPlayable) {
+      e.key === "Enter" && updateAudio(track);
+    }
+  };
   return (
     <div
       className={cx(
@@ -18,6 +25,8 @@ export const Track = ({ track }: { track: SimpleTrack }) => {
         }
       )}
       onClick={isPlayable ? () => updateAudio(track) : null}
+      tabIndex={isPlayable ? 0 : -1}
+      onKeyPress={handleKeyPress}
     >
       <div className="flex flex-row items-center gap-4">
         <div className="img-wrapper artist">
@@ -55,6 +64,12 @@ export const MiniTrack = ({
   const { updateAudio, currentlyPlaying, isPlaying } = useContext(AudioContext);
   const isCurrentTrack = currentlyPlaying?.id === track.id;
   const isPlayable = !!track.preview_url;
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    if (isPlayable) {
+      e.key === "Enter" && updateAudio(track);
+    }
+  };
   return (
     <div
       className={cx(
@@ -66,6 +81,8 @@ export const MiniTrack = ({
       )}
       title={track.name}
       onClick={isPlayable ? () => updateAudio(track) : null}
+      onKeyPress={handleKeyPress}
+      tabIndex={isPlayable ? 0 : -1}
     >
       <div className="flex items-center gap-2 w-full">
         {isNumbered && <div className="text-xs subtext">{track.track_number}.</div>}

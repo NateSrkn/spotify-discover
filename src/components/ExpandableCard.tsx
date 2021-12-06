@@ -7,8 +7,11 @@ import cx from "classnames";
 import { Image, Button } from ".";
 import { toUppercase } from "../util/helpers";
 import { simplifyStructure } from "../util/spotify";
-import { FiChevronLeft } from "react-icons/fi";
+import { FiChevronLeft, FiMoreHorizontal } from "react-icons/fi";
 import { TrackList, AlbumList } from ".";
+// import * as Tabs from "@radix-ui/react-tabs";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { DropdownContent, DropdownItem } from "./Dropdown";
 interface ExpandableCardProps {
   baseData: SimpleArtist;
   isOpen: boolean;
@@ -74,6 +77,9 @@ export const ExpandableCard = ({
       aria-selected={isOpen}
       aria-current={isOpen}
       aria-expanded={isOpen}
+      onKeyPress={(e) => e.key === "Enter" && handleClick()}
+      onFocus={() => handleMouseEnter(id)}
+      tabIndex={0}
       {...rest}
     >
       <div
@@ -81,6 +87,9 @@ export const ExpandableCard = ({
           "opacity-0": !isOpen,
           "opacity-100 visible flex gap-2 flex-wrap mb-4": isOpen,
         })}
+        aria-label={`Breadcrumbs related to ${baseData.name}`}
+        role="tablist"
+        tabIndex={-1}
       >
         {isOpen &&
           breadcrumbs.map((item) => (
@@ -89,6 +98,7 @@ export const ExpandableCard = ({
               crumb={item}
               isActive={item.id === activeArtist.id}
               onClick={() => handleSetActiveArtist(item)}
+              tabIndex={0}
             />
           ))}
       </div>
@@ -119,8 +129,28 @@ export const ExpandableCard = ({
             <p className="subtext text-sm truncate">{genres.join(", ")}</p>
           </div>
           {isBreadcrumb && isOpen && (
-            <div className="flex absolute top-2 right-2 gap-2">
-              <Button onClick={() => handleRemoveBreadcrumb(artist)}>Remove</Button>
+            <div className="flex absolute top-2 right-2">
+              <DropdownMenu.Root modal={false}>
+                <DropdownMenu.Trigger
+                  onClick={(e) => e.stopPropagation()}
+                  className="button background-hover w-max"
+                >
+                  <FiMoreHorizontal className="text-black dark:text-white fill-current" />
+                </DropdownMenu.Trigger>
+                <DropdownContent side="bottom" align="end" sideOffset={10}>
+                  {/* <DropdownItem>Add To Playlist</DropdownItem> */}
+                  {isBreadcrumb && (
+                    <DropdownItem
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        handleRemoveBreadcrumb(artist);
+                      }}
+                    >
+                      Remove
+                    </DropdownItem>
+                  )}
+                </DropdownContent>
+              </DropdownMenu.Root>
             </div>
           )}
         </div>
@@ -139,22 +169,22 @@ export const ExpandableCard = ({
                 <AlbumList
                   albums={artist.collection?.album?.list}
                   title="Albums"
-                  onClick={setActiveAlbum}
+                  onClick={handleSetActiveAlbum}
                 />
                 <AlbumList
                   albums={artist.collection?.single?.list}
                   title="Singles and EPs"
-                  onClick={setActiveAlbum}
+                  onClick={handleSetActiveAlbum}
                 />
                 <AlbumList
                   albums={artist.collection?.compilation?.list}
                   title="Compilations"
-                  onClick={setActiveAlbum}
+                  onClick={handleSetActiveAlbum}
                 />
                 <AlbumList
                   albums={artist.collection?.appears_on?.list}
                   title="Appears On"
-                  onClick={setActiveAlbum}
+                  onClick={handleSetActiveAlbum}
                 />
               </div>
               <div className="col-span-6 md:col-span-2 p-5">
@@ -170,7 +200,7 @@ export const ExpandableCard = ({
           )}
           {isOpen && activeAlbum && (
             <div className="p-5">
-              <Button onClick={() => handleSetActiveAlbum(null)} icon={FiChevronLeft}>
+              <Button action={() => handleSetActiveAlbum(null)} icon={FiChevronLeft}>
                 Back
               </Button>
               <ExpandedAlbumDisplay album={album} />
@@ -188,7 +218,7 @@ const ExpandedAlbumDisplay = ({ album }: { album: Album }) => {
   return (
     <div className="col-span-full">
       <div className="py-4 flex gap-2 items-center flex-wrap md:flex-nowrap w-full">
-        <div className="img-wrapper  mx-auto md:w-[120px] md:h-[120px] ">
+        <div className="img-wrapper  mx-auto w-full max-w-sm md:w-[120px] md:h-[120px] ">
           <Image
             src={album.images[1].url}
             height={album.images[1].height}

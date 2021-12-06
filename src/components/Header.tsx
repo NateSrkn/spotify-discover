@@ -19,7 +19,7 @@ export const Header = () => {
               </div>
               <div>
                 <h3 className="text-xl font-bold mb-1">{session.user.name}</h3>
-                <Button onClick={() => signOut()}>Sign Out</Button>
+                <Button action={() => signOut()}>Sign Out</Button>
               </div>
             </div>
           </div>

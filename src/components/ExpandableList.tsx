@@ -86,7 +86,7 @@ export const ExpandableList = ({
         {!isShort && (
           <div className="my-2">
             <Button
-              onClick={() => setIsExpanded(!isExpanded)}
+              action={() => setIsExpanded(!isExpanded)}
               icon={isExpanded ? FiChevronUp : FiChevronDown}
               iconPosition="right"
             >

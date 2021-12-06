@@ -1,18 +1,27 @@
-import React from "react";
+import React, { KeyboardEvent, useEffect } from "react";
 import { Image } from ".";
 import cx from "classnames";
-import * as ContextMenu from "@radix-ui/react-context-menu";
 
-export const Breadcrumb = ({ crumb, isActive, onClick = null }) => {
+export const Breadcrumb = ({ crumb, isActive, onClick = null, ...rest }) => {
+  const handleOnKeyUp = (event: KeyboardEvent) => {
+    event.stopPropagation();
+    event.key === "Enter" && onClick && onClick();
+  };
   return (
-    <div className="relative group">
+    <div
+      className="relative group"
+      role="tab"
+      aria-selected={isActive}
+      onClick={onClick ?? null}
+      onKeyPress={handleOnKeyUp}
+      {...rest}
+    >
       <div
         className={cx("img-wrapper breadcrumb is-rounded", {
           "border-2 dark:border-white border-black": isActive,
           "cursor-pointer": onClick,
         })}
         key={crumb.id}
-        onClick={onClick ?? null}
       >
         <Image
           src={crumb.images[1]?.url}

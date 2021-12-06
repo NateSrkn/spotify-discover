@@ -107,7 +107,7 @@ export default function Home() {
       </ul>
       {hasNextPage && (
         <Button
-          onClick={fetchNextPage}
+          action={fetchNextPage}
           style={{
             marginTop: "1.25rem",
           }}

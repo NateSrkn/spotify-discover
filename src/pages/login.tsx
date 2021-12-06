@@ -11,7 +11,7 @@ export default function LoginPage() {
             like.
           </p>
         </div>
-        <Button onClick={() => signIn("spotify")}>Sign in</Button>
+        <Button action={() => signIn("spotify")}>Sign in</Button>
       </div>
     </Layout>
   );

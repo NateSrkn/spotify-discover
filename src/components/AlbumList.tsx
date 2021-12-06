@@ -11,6 +11,13 @@ export const AlbumList = ({
   onClick: (album: Album) => void;
 }) => {
   if (!albums || !albums.length) return null;
+
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLDivElement>, album) => {
+    event.stopPropagation();
+    if (event.key === "Enter") {
+      onClick(album);
+    }
+  };
   return (
     <ExpandableList
       title={title}
@@ -22,6 +29,8 @@ export const AlbumList = ({
           key={album.id}
           className="truncate cursor-pointer p-2 hover:bg-gray-100 dark:hover:bg-green-custom rounded-sm"
           onClick={() => onClick({ images, ...album })}
+          onKeyPress={(event) => handleKeyPress(event, { images, ...album })}
+          tabIndex={0}
           title={album.name}
         >
           <div className="img-wrapper">
