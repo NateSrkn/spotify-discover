@@ -1,4 +1,3 @@
-import { Session } from "next-auth";
 import { getSession } from "next-auth/react";
 import { GetServerSideProps } from "next";
 import React, { useState } from "react";
@@ -28,7 +27,6 @@ export default function Home() {
   const {
     data: current_selection,
     isLoading,
-    isError,
     isFetched,
     fetchNextPage,
     hasNextPage,
@@ -63,7 +61,8 @@ export default function Home() {
             value: options.type,
             label: `Top ${toUppercase(options.type)}`,
           }}
-          onClick={(value) => handleSetOptions("type", value)}
+          ariaLabel="Select top artists or tracks"
+          onChange={(value) => handleSetOptions("type", value)}
         />
         <Select
           options={Object.entries(titles).map(([value, label]) => ({
@@ -74,10 +73,11 @@ export default function Home() {
             label: titles[options.termLength],
             value: options.termLength,
           }}
-          onClick={(value) => handleSetOptions("termLength", value)}
+          ariaLabel={`Select time frame`}
+          onChange={(value) => handleSetOptions("termLength", value)}
         />
       </div>
-      <hr className="w-full border-1 border-green-custom mt-2 mb-4" />
+      <hr className="w-full border-1 border-green-custom mt-4 mb-4" />
 
       <ul className="flex flex-col gap-4">
         {isLoading && <p>Loading...</p>}

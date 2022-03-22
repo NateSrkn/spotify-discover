@@ -67,8 +67,8 @@
     @apply flex shadow-md flex-shrink-0;
     &.artist {
       @extend .is-rounded;
-      width: 80px;
-      height: 80px;
+      width: 60px;
+      height: 60px;
       @media (min-width: 640px) {
         width: 100px;
         height: 100px;

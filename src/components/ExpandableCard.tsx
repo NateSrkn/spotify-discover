@@ -9,7 +9,6 @@ import { toUppercase } from "../util/helpers";
 import { simplifyStructure } from "../util/spotify";
 import { FiChevronLeft, FiMoreHorizontal } from "react-icons/fi";
 import { TrackList, AlbumList } from ".";
-// import * as Tabs from "@radix-ui/react-tabs";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { DropdownContent, DropdownItem } from "./Dropdown";
 interface ExpandableCardProps {
@@ -127,6 +126,15 @@ export const ExpandableCard = ({
           <div className="pl-4 font-normal truncate">
             <h3 className="title">{name}</h3>
             <p className="subtext text-sm truncate">{genres.join(", ")}</p>
+            {isOpen && (
+              <a
+                className="button background-hover w-max hover:scale-105 my-2"
+                href={`https://open.spotify.com/artist/${id}`}
+                onClick={(event) => event.stopPropagation()}
+              >
+                Open in Spotify
+              </a>
+            )}
           </div>
           {isBreadcrumb && isOpen && (
             <div className="flex absolute top-2 right-2">

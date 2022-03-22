@@ -58,49 +58,42 @@ export default function Controls() {
       </React.Fragment>
     );
   };
-
+  if (!currentlyPlaying) return null;
   return (
-    <div className="fixed left-0 bottom-0 w-full">
-      {currentlyPlaying && (
-        <div className="flex items-center p-3 m-4 bg-gray-200 dark:bg-[#242D2D] md:max-w-sm rounded shadow-2xl gap-2 animate-fade-in">
-          <div className="flex items-center gap-4 max-w-[300px] truncate w-full group">
-            <Button action={handleToggle}>
-              <PlayIconHandler isPlaying={isPlaying} />
-            </Button>
-            <div className="truncate">
-              <div className="text-xs truncate">{currentlyPlaying.name}</div>
-              <div className="text-xs text-gray-500 truncate">
-                {currentlyPlaying.artists.map((artist) => artist.name).join(", ")}
-              </div>
-            </div>
-          </div>
-          <div className="flex gap-1">
-            <VolumeIconHandler />
-            <Slider.Root
-              defaultValue={[currentVolume]}
-              max={1}
-              step={0.01}
-              value={[isMuted ? 0 : currentVolume]}
-              aria-label="Volume"
-              onValueChange={(value) => {
-                if (isMuted) {
-                  handleSetMute();
-                }
-                handleSetVolume(value[0]);
-              }}
-              className="relative flex items-center w-24 group cursor-pointer"
-            >
-              <Slider.Track className="bg-blue-200 relative flex-grow rounded-full h-1">
-                <Slider.Range className="absolute bg-blue-300 group-hover:bg-spotify-green rounded-full h-full" />
-              </Slider.Track>
-              <Slider.Thumb className="h-2 w-2 group-hover:block bg-white rounded-full cursor-pointer hidden" />
-            </Slider.Root>
+    <div className="flex items-center bg-gray-200 dark:bg-[#242D2D] p-3 w-full md:max-w-sm rounded shadow-2xl gap-2">
+      <div className="flex items-center gap-4 max-w-[300px] truncate w-full group ">
+        <Button action={handleToggle}>
+          <PlayIconHandler isPlaying={isPlaying} />
+        </Button>
+        <div className="truncate">
+          <div className="text-xs truncate">{currentlyPlaying.name}</div>
+          <div className="text-xs text-gray-500 truncate">
+            {currentlyPlaying.artists.map((artist) => artist.name).join(", ")}
           </div>
         </div>
-      )}
-      {/* <div className="bg-gray-200 dark:bg-faded-green w-full shadow-lg">
-        <div className="max-w-6xl mx-auto p-4 flex gap-4 items-center"></div>
-      </div> */}
+      </div>
+      <div className="flex gap-1">
+        <VolumeIconHandler />
+        <Slider.Root
+          defaultValue={[currentVolume]}
+          max={1}
+          step={0.01}
+          value={[isMuted ? 0 : currentVolume]}
+          aria-label="Volume"
+          onValueChange={(value) => {
+            if (isMuted) {
+              handleSetMute();
+            }
+            handleSetVolume(value[0]);
+          }}
+          className="relative flex items-center w-24 group cursor-pointer"
+        >
+          <Slider.Track className="bg-blue-200 relative flex-grow rounded-full h-1">
+            <Slider.Range className="absolute bg-blue-300 group-hover:bg-spotify-green rounded-full h-full" />
+          </Slider.Track>
+          <Slider.Thumb className="h-2 w-2 group-hover:block bg-white rounded-full cursor-pointer hidden" />
+        </Slider.Root>
+      </div>
     </div>
   );
 }
