@@ -1,65 +1,43 @@
-import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
-import { FiChevronUp, FiChevronDown } from "react-icons/fi";
-import { Button } from ".";
-import { useTimeout } from "../hooks";
+import { FiChevronDown } from "react-icons/fi";
+import * as SelectPrimitive from "@radix-ui/react-select";
 interface SelectProps {
   options: Array<{ label: string; value: string }>;
-  onClick: (value: string) => void;
+  onChange: (value: string) => void;
   defaultValue?: { label: string; value: string };
+  ariaLabel: string;
 }
-export const Select = ({ options, onClick, defaultValue }: SelectProps) => {
-  const [selected, setSelected] = useState(defaultValue);
-  const [isOpen, setIsOpen] = useState(false);
-  const [handleSetTimeout, handleClearTimeout] = useTimeout();
-  const handleClick = (option) => {
-    onClick(option.value);
-    setIsOpen(!isOpen);
-    setSelected(option);
-  };
 
-  const onBlurHandler = () => handleSetTimeout(() => setIsOpen(false), null);
-  const onFocusHandler = () => handleClearTimeout();
-
+export const Select = ({ defaultValue, onChange, options, ariaLabel }: SelectProps) => {
   return (
-    <div className="relative text-base sm:text-lg" onBlur={onBlurHandler} onFocus={onFocusHandler}>
-      <Button
-        action={() => setIsOpen(!isOpen)}
-        icon={isOpen ? FiChevronUp : FiChevronDown}
-        iconPosition="right"
-        aria-haspopup="true"
-        aria-expanded={isOpen}
-        style={{
-          fontSize: "1rem",
-        }}
-      >
-        {selected.label}
-      </Button>
-
-      {isOpen && (
-        <div
-          className="absolute top-full z-50 dark:bg-green-custom bg-gray-100 p-1 w-max rounded-md mt-2 shadow-lg flex flex-col items-start"
-          style={{
-            fontSize: "1rem",
-          }}
+    <div className="relative text-base sm:text-lg">
+      <SelectPrimitive.Root defaultValue={defaultValue.value} onValueChange={onChange}>
+        <SelectPrimitive.Trigger
+          aria-label={ariaLabel}
+          className="button background-hover w-max hover:scale-105 gap-2"
         >
-          {options
-            .filter((option) => option.value !== selected.value)
-            .map((option) => (
-              <Button
-                key={option.value}
-                action={() => handleClick(option)}
-                style={{
-                  justifyContent: "flex-start",
-                  textAlign: "left",
-                  fontSize: "1rem",
-                }}
-              >
-                {option.label}
-              </Button>
-            ))}
-        </div>
-      )}
+          <SelectPrimitive.Value />
+          <SelectPrimitive.Icon>
+            <FiChevronDown />
+          </SelectPrimitive.Icon>
+        </SelectPrimitive.Trigger>
+        <SelectPrimitive.Content className="dark:bg-faded-green bg-gray-100 p-1 w-max rounded shadow-lg flex flex-col items-start text-sm">
+          <SelectPrimitive.ScrollUpButton />
+          <SelectPrimitive.Viewport>
+            <SelectPrimitive.Group>
+              {options.map((option) => (
+                <SelectPrimitive.Item
+                  key={option.value}
+                  value={option.value}
+                  className="p-2 cursor-pointer rounded bg-hover"
+                >
+                  <SelectPrimitive.ItemText>{option.label}</SelectPrimitive.ItemText>
+                </SelectPrimitive.Item>
+              ))}
+            </SelectPrimitive.Group>
+          </SelectPrimitive.Viewport>
+          <SelectPrimitive.ScrollDownButton />
+        </SelectPrimitive.Content>
+      </SelectPrimitive.Root>
     </div>
   );
 };

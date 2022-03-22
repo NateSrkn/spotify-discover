@@ -24,7 +24,11 @@ export const Layout = ({ children, session = null, ...customMeta }) => {
       </Head>
       <Header />
       <main className="flex-1 w-full min-h-screen">{children}</main>
-      <Controls />
+      <div className="fixed left-0 bottom-0 w-full">
+        <div className="flex items-center p-3 m-4  md:max-w-sm rounded shadow-2xl gap-2 animate-fade-in">
+          <Controls />
+        </div>
+      </div>
       <Footer />
     </div>
   );

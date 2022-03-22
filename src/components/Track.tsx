@@ -22,6 +22,7 @@ export const Track = ({ track }: { track: SimpleTrack }) => {
         "w-full bg-green-custom  justify-self-start relative flex flex-col shadow-md rounded-md bg-opacity-10 p-5 track",
         {
           "text-spotify-green": isCurrentTrack,
+          "cursor-pointer": isPlayable,
         }
       )}
       onClick={isPlayable ? () => updateAudio(track) : null}
