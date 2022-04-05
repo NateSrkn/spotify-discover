@@ -1,7 +1,8 @@
 import { pullInitials } from "../util/helpers";
+import NextImage from "next/image";
 export const Image = ({ src, alt, height, width }) => {
   return src ? (
-    <img
+    <NextImage
       src={src}
       alt={alt}
       height={height}

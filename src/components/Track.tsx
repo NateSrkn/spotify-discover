@@ -74,10 +74,10 @@ export const MiniTrack = ({
   return (
     <div
       className={cx(
-        "w-full hover:bg-gray-100 dark:hover:bg-green-custom p-1 cursor-pointer rounded-sm transition-all mini-track",
+        "w-full hover:bg-gray-100 dark:hover:bg-green-custom p-1 cursor-pointer rounded-sm transition-all mini-track flex",
         {
           "text-spotify-green": isCurrentTrack,
-          "p-3": !hasImage,
+          "md:p-2 px-1 py-2": !hasImage,
         }
       )}
       title={track.name}

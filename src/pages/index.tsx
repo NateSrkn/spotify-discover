@@ -135,13 +135,14 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     cacheTime: Infinity,
     getNextPageParam: ({ next }) => next,
   };
-  await queryClient.prefetchQuery("nowPlaying", () => getNowPlaying(session));
-  await queryClient.prefetchInfiniteQuery(
-    ["artists", "short_term"],
-    () => getTopItems({ type: "artists", time_range: "short_term" }, session),
-    queryConfig
-  );
-
+  await Promise.all([
+    queryClient.prefetchQuery("nowPlaying", () => getNowPlaying(session)),
+    queryClient.prefetchInfiniteQuery(
+      ["artists", "short_term"],
+      () => getTopItems({ type: "artists", time_range: "short_term" }, session),
+      queryConfig
+    ),
+  ]);
   return {
     props: { session, dehydratedState: JSON.parse(JSON.stringify(dehydrate(queryClient))) },
   };

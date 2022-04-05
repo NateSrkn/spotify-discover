@@ -130,6 +130,8 @@ export const ExpandableCard = ({
               <a
                 className="button background-hover w-max hover:scale-105 my-2"
                 href={`https://open.spotify.com/artist/${id}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={(event) => event.stopPropagation()}
               >
                 Open in Spotify

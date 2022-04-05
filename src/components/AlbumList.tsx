@@ -27,7 +27,7 @@ export const AlbumList = ({
       {albums.map(({ images, ...album }) => (
         <div
           key={album.id}
-          className="truncate cursor-pointer p-2 hover:bg-gray-100 dark:hover:bg-green-custom rounded-sm"
+          className="truncate cursor-pointer p-2 hover:bg-gray-100 dark:hover:bg-green-custom rounded"
           onClick={() => onClick({ images, ...album })}
           onKeyPress={(event) => handleKeyPress(event, { images, ...album })}
           tabIndex={0}

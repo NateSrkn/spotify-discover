@@ -1,6 +1,7 @@
 import { Image, Button, DarkModeToggle, NowPlaying } from ".";
 import { signOut, useSession } from "next-auth/react";
 import React from "react";
+import { FiMenu } from "react-icons/fi";
 
 export const Header = () => {
   const { status, data: session } = useSession();
@@ -10,7 +11,12 @@ export const Header = () => {
         <React.Fragment>
           <div className="flex items-start justify-between mb-8">
             <h3 className="text-xl font-bold">Crumbs</h3>
-            <DarkModeToggle />
+            <div className="flex gap-2">
+              <button className="sm:hidden w-9 h-9 bg-gray-200 rounded-lg dark:bg-green-custom flex items-center justify-center  hover:ring-2 ring-gray-300  transition-all">
+                <FiMenu />
+              </button>
+              <DarkModeToggle />
+            </div>
           </div>
           <div className="flex items-start justify-between">
             <div className="flex gap-4 items-center">
