@@ -12,7 +12,7 @@ export const NowPlaying = () => {
         />
       </svg>
       <div className="inline-flex flex-col sm:flex-row w-full max-w-full truncate">
-        {nowPlaying.isListening ? (
+        {nowPlaying?.isListening ? (
           <a
             className="text-gray-800 dark:text-gray-200 font-medium  max-w-max truncate"
             href={nowPlaying.href}
@@ -28,7 +28,7 @@ export const NowPlaying = () => {
         <p className="text-gray-500 dark:text-pewter-blue max-w-max truncate">
           {nowPlaying?.artists?.array.map((a, index) => (
             <React.Fragment key={a.id}>
-              <span onClick={() => console.log(a)}>{a.name}</span>
+              <span>{a.name}</span>
               {index !== nowPlaying.artists.array.length - 1 ? ", " : ""}
             </React.Fragment>
           )) ?? "Spotify"}

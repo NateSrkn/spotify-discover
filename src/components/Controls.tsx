@@ -61,7 +61,7 @@ export default function Controls() {
   if (!currentlyPlaying) return null;
   return (
     <div className="flex items-center bg-gray-200 dark:bg-[#242D2D] p-3 w-full md:max-w-sm rounded shadow-2xl gap-2">
-      <div className="flex items-center gap-4 max-w-[300px] truncate w-full group ">
+      <div className="flex items-center gap-4 max-w-[300px] truncate w-full group">
         <Button action={handleToggle}>
           <PlayIconHandler isPlaying={isPlaying} />
         </Button>
@@ -72,7 +72,7 @@ export default function Controls() {
           </div>
         </div>
       </div>
-      <div className="flex gap-1">
+      <div className="flex gap-1 ml-auto">
         <VolumeIconHandler />
         <Slider.Root
           defaultValue={[currentVolume]}
