@@ -5,7 +5,7 @@ const defaultTheme = require("tailwindcss/defaultTheme");
  */
 const config = {
   mode: "jit",
-  content: ["./src/pages/**/*.tsx", "./src/components/**/*.tsx", "./src/layouts/**/*.tsx"],
+  content: ["./src/pages/**/*.tsx", "./src/components/**/*.tsx"],
   darkMode: "class",
   theme: {
     fontFamily: {
