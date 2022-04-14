@@ -7,7 +7,7 @@ export const ListCard: React.FC<{
 }> = ({ image, title, subtitle }) => {
   return (
     <div className="flex items-center rounded overflow-hidden border border-slate-200 dark:border-primary-green gap-4 relative dark:hover:bg-primary-green hover:bg-slate-200 hover:scale-105 transition-all">
-      <div className="flex-grow p-2 dark:bg-primary-green bg-slate-200 max-w-[100px] max-h-[100px] sm:max-w-[125px] sm:max-h-[125px]">
+      <div className="flex-shrink-0 p-2 dark:bg-primary-green bg-slate-200 max-w-[100px] max-h-[100px] sm:max-w-[125px] sm:max-h-[125px]">
         <Image
           src={image.url}
           height={image.height}
