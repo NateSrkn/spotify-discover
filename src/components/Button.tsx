@@ -1,9 +1,11 @@
-import React from "react";
+import React, { HTMLAttributes } from "react";
+import classNames from "classnames";
 interface IButton {
   children: React.ReactNode;
   action: () => void;
   icon?: React.ElementType;
   iconPosition?: "left" | "right";
+  className?: HTMLAttributes<HTMLButtonElement>["className"];
   [key: string]: any;
 }
 
@@ -12,6 +14,7 @@ export const Button = ({
   action,
   icon: Icon,
   iconPosition = "left",
+  className,
   ...rest
 }: IButton) => {
   const handleClick = (event) => {
@@ -24,7 +27,7 @@ export const Button = ({
   };
   return (
     <button
-      className="button background-hover w-max hover:scale-105"
+      className={classNames("button background-hover w-max hover:scale-105", className)}
       onClick={handleClick}
       onKeyPress={handleKeyPress}
       {...rest}

@@ -6,7 +6,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 export const getUser = async (session: Session) => {
   const { data } = await request({
     url: `/me`,
-    headers: { Authorization: `Bearer ${session.accessToken}` },
+    headers: { Authorization: `Bearer ${session.access_token}` },
   });
   return data || {};
 };

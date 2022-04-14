@@ -11,7 +11,7 @@ export const Layout = ({ children, session = null, ...customMeta }) => {
     ...customMeta,
   };
   return (
-    <div className="flex flex-col justify-center items-start px-4 w-full max-w-6xl mx-auto min-h-full">
+    <div className="flex flex-col justify-center items-start px-4 w-full max-w-7xl mx-auto min-h-full">
       <Head>
         <title>{meta.title}</title>
         <link rel="icon" href="/favicon.ico" />
@@ -25,7 +25,7 @@ export const Layout = ({ children, session = null, ...customMeta }) => {
       <Header />
       <main className="flex-1 w-full min-h-screen">{children}</main>
       <div className="fixed left-0 bottom-0 w-full">
-        <div className="flex items-center p-3 sm:m-4  md:max-w-sm rounded shadow-2xl gap-2 animate-fade-in">
+        <div className="flex items-center m-3 md:max-w-sm rounded shadow-2xl gap-2 animate-fade-in">
           <Controls />
         </div>
       </div>

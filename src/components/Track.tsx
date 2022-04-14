@@ -10,14 +10,8 @@ export const Track = ({ track }: { track: SimpleTrack }) => {
   const isCurrentTrack = currentlyPlaying?.id === track.id;
   const isPlayable = !!track.preview_url;
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    e.stopPropagation();
-    if (isPlayable) {
-      e.key === "Enter" && updateAudio(track);
-    }
-  };
   return (
-    <div
+    <button
       className={cx(
         "w-full bg-green-custom  justify-self-start relative flex flex-col shadow-md rounded-md bg-opacity-10 p-5 track",
         {
@@ -27,7 +21,6 @@ export const Track = ({ track }: { track: SimpleTrack }) => {
       )}
       onClick={isPlayable ? () => updateAudio(track) : null}
       tabIndex={isPlayable ? 0 : -1}
-      onKeyPress={handleKeyPress}
     >
       <div className="flex flex-row items-center gap-4">
         <div className="img-wrapper artist">
@@ -49,7 +42,7 @@ export const Track = ({ track }: { track: SimpleTrack }) => {
         )}
         {isPlayable && <IconHandler isCurrentTrack={isCurrentTrack} isPlaying={isPlaying} />}
       </div>
-    </div>
+    </button>
   );
 };
 
@@ -65,16 +58,10 @@ export const MiniTrack = ({
   const { updateAudio, currentlyPlaying, isPlaying } = useContext(AudioContext);
   const isCurrentTrack = currentlyPlaying?.id === track.id;
   const isPlayable = !!track.preview_url;
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    e.stopPropagation();
-    if (isPlayable) {
-      e.key === "Enter" && updateAudio(track);
-    }
-  };
   return (
-    <div
+    <button
       className={cx(
-        "w-full hover:bg-gray-100 dark:hover:bg-green-custom p-1 cursor-pointer rounded-sm transition-all mini-track flex",
+        "w-full hover:bg-slate-200 dark:hover:bg-primary-green p-1 cursor-pointer rounded-sm transition-all mini-track flex truncate justify-center items-center",
         {
           "text-spotify-green": isCurrentTrack,
           "md:p-2 px-1 py-2": !hasImage,
@@ -82,7 +69,6 @@ export const MiniTrack = ({
       )}
       title={track.name}
       onClick={isPlayable ? () => updateAudio(track) : null}
-      onKeyPress={handleKeyPress}
       tabIndex={isPlayable ? 0 : -1}
     >
       <div className="flex items-center gap-2 w-full">
@@ -91,10 +77,11 @@ export const MiniTrack = ({
           {hasImage && (
             <div className="img-wrapper breadcrumb">
               <Image
-                src={track.images[0]?.url}
-                height={track.images[0]?.height}
-                width={track.images[0]?.width}
+                src={track.album.images[0]?.url}
+                height={track.album.images[0]?.height}
+                width={track.album.images[0]?.width}
                 alt={track.name}
+                className="rounded shadow"
               />
             </div>
           )}
@@ -104,7 +91,7 @@ export const MiniTrack = ({
         {!isPlayable && <div className="badge min-w-max p-1 rounded-md">No Preview Available</div>}
         {isPlayable && <IconHandler isCurrentTrack={isCurrentTrack} isPlaying={isPlaying} />}
       </div>
-    </div>
+    </button>
   );
 };
 

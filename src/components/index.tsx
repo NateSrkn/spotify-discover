@@ -1,6 +1,6 @@
 export * from "./Breadcrumb";
 export * from "./Button";
-export * from "./DarkModeToggle";
+export * from "./ThemeToggle";
 export * from "./ExpandableList";
 export * from "./Footer";
 export * from "./Header";
@@ -13,4 +13,4 @@ export * from "./Header";
 export * from "./NowPlaying";
 export * from "./AlbumList";
 export * from "./TrackList";
-export * from "./ArtistList";
+export * from "./Link";

@@ -1,15 +1,15 @@
-const { fontFamily } = require("tailwindcss/defaultTheme");
+const defaultTheme = require("tailwindcss/defaultTheme");
 
 /**
  * @typedef {import('tailwindcss/defaultConfig')}
  */
 const config = {
   mode: "jit",
-  content: ["./src/pages/**/*.tsx", "./src/components/**/*.tsx"],
+  content: ["./src/pages/**/*.tsx", "./src/components/**/*.tsx", "./src/layouts/**/*.tsx"],
   darkMode: "class",
   theme: {
     fontFamily: {
-      sans: ["Satoshi", ...fontFamily.sans],
+      sans: ["Satoshi", ...defaultTheme.fontFamily.sans],
     },
     extend: {
       animation: {
@@ -26,14 +26,15 @@ const config = {
         },
       },
       colors: {
-        "green-custom": "#414A4A",
+        "primary-green": "#1E2828",
+        "secondary-green": "#414A4A",
         "pewter-blue": "#87A0B2",
-        "faded-green": "#1E2828",
         "spotify-green": "#1ED760",
       },
       backgroundColor: (theme) => ({ ...theme("colors"), dark: "#111919" }),
     },
   },
+  plugins: [],
 };
 
 module.exports = config;
