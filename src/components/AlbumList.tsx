@@ -39,6 +39,7 @@ export const AlbumList = ({
               height={images[1]?.height}
               width={images[1]?.width}
               alt={album.name}
+              className="rounded shadow"
             />
           </div>
           <h3 className="truncate py-1 text-sm">{album.name}</h3>

@@ -1,21 +1,7 @@
-import { useQuery, UseQueryResult } from "react-query";
-import { request } from "../util/api";
-import { SimpleCurrentPlaying } from "../util/types/spotify";
+import useSWR from "swr";
+import { NowPlaying } from "../util/types/spotify";
+import { fetcher } from "../util/api";
+import { requests } from "../util/helpers";
 
-export const getNowPlaying = () =>
-  request({ baseURL: "api", url: "me/now_playing" });
-
-export const useNowPlaying = (): UseQueryResult<
-  Partial<SimpleCurrentPlaying>
-> =>
-  useQuery(
-    "nowPlaying",
-    async () => {
-      const { data } = await getNowPlaying();
-      return data || { isListening: false };
-    },
-    {
-      placeholderData: { isListening: false },
-      staleTime: 60 * 1000,
-    }
-  );
+export const useNowPlaying = () =>
+  useSWR<NowPlaying>(requests["now_playing"], (url) => fetcher({ url }));

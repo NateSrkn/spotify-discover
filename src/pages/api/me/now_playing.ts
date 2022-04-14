@@ -1,6 +1,23 @@
 import { getSession } from "next-auth/react";
+
 import { NextApiRequest, NextApiResponse } from "next";
-import { getNowPlaying } from "../../../util/spotify";
+import { fetcher, spotify } from "../../../util/api";
+
+export const getNowPlaying = async (session) => {
+  const data = await fetcher(
+    {
+      url: "/me/player/currently-playing",
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    },
+    spotify
+  );
+  if (!data || data.currently_playing_type === "episode") {
+    return {
+      isListening: false,
+    };
+  }
+  return data;
+};
 
 export default async function nowPlaying(req: NextApiRequest, res: NextApiResponse) {
   try {

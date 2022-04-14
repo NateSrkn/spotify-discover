@@ -21,6 +21,12 @@
   h4 {
     @apply text-lg font-medium;
   }
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @layer components {
@@ -31,7 +37,7 @@
     @apply relative text-sm inline-flex items-center py-2 px-3 rounded;
   }
   .background-hover {
-    @apply dark:bg-green-custom dark:bg-opacity-20 transition-all dark:hover:bg-opacity-100 bg-gray-100 hover:bg-opacity-50;
+    @apply dark:bg-secondary-green dark:bg-opacity-20 transition-all dark:hover:bg-opacity-100 bg-gray-100 hover:bg-opacity-50;
   }
   .base-link {
     @apply text-gray-500 hover:text-gray-600 transition;
@@ -40,7 +46,7 @@
     @apply border-gray-200 dark:border-gray-800;
   }
   .bg-hover {
-    @apply hover:bg-gray-200 dark:hover:bg-green-custom transition-all;
+    @apply hover:bg-gray-200 dark:hover:bg-secondary-green transition-all;
   }
   .title {
     @apply text-base truncate;
@@ -53,7 +59,7 @@
   }
   .badge {
     @extend .subtext;
-    @apply uppercase bg-gray-100 dark:bg-faded-green;
+    @apply uppercase bg-gray-100 dark:bg-primary-green;
     font-size: 10px;
   }
 
@@ -105,7 +111,12 @@
       @apply object-cover object-center w-full h-full;
     }
   }
-
+  .tab {
+    @apply pb-2 sm:flex-none whitespace-nowrap;
+    &.active {
+      @apply border-b dark:border-slate-200 border-primary-green;
+    }
+  }
   .track,
   .mini-track {
     .icon {

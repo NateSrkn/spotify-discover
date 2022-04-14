@@ -1,26 +1,6 @@
-import { useQuery, useQueryClient, UseQueryResult } from "react-query";
-import { request } from "../util/api";
-import { Album } from "../util/types/spotify";
+import useSWRImmutable from "swr/immutable";
+import { fetcher } from "../util/api";
+import { requests } from "../util/helpers";
 
-export const getAlbum = (id: string) => request({ baseURL: "api", url: "album", params: { id } });
-
-interface UseAlbumProps {
-  album: Partial<Album>;
-  isEnabled: boolean;
-}
-export const useAlbum = ({ album, isEnabled }: UseAlbumProps): UseQueryResult<Album> => {
-  return useQuery(
-    ["album", album?.id],
-    async () => {
-      const { data } = await getAlbum(album.id);
-      return data;
-    },
-    {
-      enabled: isEnabled,
-      placeholderData: album,
-      staleTime: Infinity,
-      cacheTime: Infinity,
-      refetchOnWindowFocus: false,
-    }
-  );
-};
+export const useAlbum = (id: string) =>
+  useSWRImmutable(id ? requests["album"](id) : null, (url) => fetcher({ url }));

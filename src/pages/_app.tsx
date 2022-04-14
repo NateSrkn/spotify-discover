@@ -1,26 +1,27 @@
-import React, { useState } from "react";
+import React, { ReactElement, ReactNode } from "react";
 import { AppProps } from "next/dist/shared/lib/router/router";
-import { QueryClientProvider, QueryClient, Hydrate } from "react-query";
 import { ThemeProvider } from "next-themes";
 import "../styles/globals.scss";
 import { AudioTracker } from "../providers";
 import { SessionProvider } from "next-auth/react";
+import { NextPage } from "next";
 
-function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
-  const [queryClient] = useState(new QueryClient());
+export type NextPageWithLayout<T = {}> = NextPage<T> & {
+  getLayout?: (page: ReactElement) => ReactNode;
+};
 
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
+};
+
+function MyApp({ Component, pageProps: { session, ...pageProps } }: AppPropsWithLayout) {
+  const getLayout = Component.getLayout || ((page) => page);
   return (
-    <QueryClientProvider client={queryClient}>
-      <Hydrate state={pageProps.dehydratedState}>
-        <SessionProvider session={session}>
-          <AudioTracker>
-            <ThemeProvider attribute="class">
-              <Component {...pageProps} />
-            </ThemeProvider>
-          </AudioTracker>
-        </SessionProvider>
-      </Hydrate>
-    </QueryClientProvider>
+    <SessionProvider session={session}>
+      <AudioTracker>
+        <ThemeProvider attribute="class">{getLayout(<Component {...pageProps} />)}</ThemeProvider>
+      </AudioTracker>
+    </SessionProvider>
   );
 }
 

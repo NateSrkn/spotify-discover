@@ -6,14 +6,16 @@ export const TrackList = ({
   tracks,
   album = null,
   title = "",
+  length = 5,
 }: {
   tracks: Track[] | SimpleTrack[];
   album?: Album;
   title?: string;
+  length?: number;
 }) => {
   const isAlbum = album !== null;
   return (
-    <ExpandableList title={title} startingLength={title ? 5 : tracks.length}>
+    <ExpandableList title={title} startingLength={length}>
       {tracks.map((track) => (
         <MiniTrack track={track} hasImage={!isAlbum} isNumbered={isAlbum} key={track.id} />
       ))}

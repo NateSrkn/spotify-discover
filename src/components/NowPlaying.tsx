@@ -1,8 +1,8 @@
 import React from "react";
 import { useNowPlaying } from "../hooks";
-
+import { Link } from "./Link";
 export const NowPlaying = () => {
-  const { data: nowPlaying } = useNowPlaying();
+  const { data: now_playing } = useNowPlaying();
   return (
     <div className="flex flex-row-reverse sm:flex-row mb-8 space-x-0 sm:space-x-2 w-full">
       <svg className="h-4 w-4 ml-auto mt-1" viewBox="0 0 168 168">
@@ -12,25 +12,25 @@ export const NowPlaying = () => {
         />
       </svg>
       <div className="inline-flex flex-col sm:flex-row w-full max-w-full truncate">
-        {nowPlaying?.isListening ? (
+        {now_playing?.item ? (
           <a
             className="text-gray-800 dark:text-gray-200 font-medium  max-w-max truncate"
-            href={nowPlaying.href}
+            href={now_playing.item.href}
             target="_blank"
             rel="noopener noreferrer"
           >
-            {nowPlaying.name}
+            {now_playing.item.name}
           </a>
         ) : (
           <p className="text-gray-800 dark:text-gray-200 font-medium">Not Playing</p>
         )}
         <span className="mx-2 text-gray-500 dark:text-pewter-blue hidden sm:block">{" – "}</span>
         <p className="text-gray-500 dark:text-pewter-blue max-w-max truncate">
-          {nowPlaying?.artists?.array.map((a, index) => (
-            <React.Fragment key={a.id}>
+          {now_playing?.item?.artists?.map((a, index) => (
+            <Link href={`/artist/${a.id}/top-tracks`} key={a.id}>
               <span>{a.name}</span>
-              {index !== nowPlaying.artists.array.length - 1 ? ", " : ""}
-            </React.Fragment>
+              {index !== now_playing.item.artists.length - 1 ? ", " : ""}
+            </Link>
           )) ?? "Spotify"}
         </p>
       </div>
