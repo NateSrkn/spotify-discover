@@ -3,17 +3,17 @@ import { Session } from "next-auth";
 import { getSession } from "next-auth/react";
 import { fetcher, spotify } from "../../../util/api";
 
-export const getBaseArtist = (artist_id: string, session: Session) =>
-  fetcher(
+export const getBaseArtist = (artist_id: string, session: Session) => {
+  return fetcher(
     {
       url: `artists/${artist_id}`,
       headers: {
         Authorization: `Bearer ${session.access_token}`,
-        "Cache-Control": "max-age=86400",
       },
     },
     spotify
   );
+};
 
 export default async function artist(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -21,6 +21,7 @@ export default async function artist(req: NextApiRequest, res: NextApiResponse) 
     if (!session) throw res.status(401).json({ message: "Unauthorized" });
     const { query } = req;
     const data = await getBaseArtist(query.id as string, session);
+    res.setHeader("Cache-Control", "max-age=3600");
     res.status(200).json({ ...data });
   } catch (error) {
     console.error(error);

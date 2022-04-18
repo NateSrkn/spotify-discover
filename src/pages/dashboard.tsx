@@ -1,25 +1,26 @@
 import { getSession } from "next-auth/react";
 import { GetServerSideProps } from "next";
 import React, { useContext, useEffect, useState } from "react";
-import { requests, toUppercase } from "../util/helpers";
-import { useNowPlaying, useTopItems } from "../hooks";
+import { toUppercase } from "../util/helpers";
+import { useNowPlaying } from "../hooks";
 import { Select, Layout, SelectOption } from "../components";
 import { Options, TermLengths, TypesList } from "../util/types/spotify";
 import { Link } from "../components/Link";
 import { ListCard } from "../components/ListCard";
 import { AudioContext } from "../providers";
 import { useRouter } from "next/router";
+import { fetcher, spotify } from "../util/api";
 
 export default function Dashboard({
   type = TypesList.ARTISTS,
   time_range = TermLengths.SHORT_TERM,
+  data,
 }) {
   const { updateAudio } = useContext(AudioContext);
   const [options, setOptions] = useState<Options>({
     type,
     time_range,
   });
-  const { data: top_items } = useTopItems(options.type, options.time_range);
   const { data: now_playing } = useNowPlaying();
   const router = useRouter();
   const types = ["tracks", "artists"];
@@ -35,7 +36,7 @@ export default function Dashboard({
   const handleSetOptions = (name: keyof typeof options, value: string) => {
     if (options[name] === value) return;
     setOptions({ ...options, [name]: value });
-    router.push({ query: { ...options, [name]: value } }, undefined, { shallow: true });
+    router.push({ query: { ...options, [name]: value } });
   };
 
   return (
@@ -83,14 +84,10 @@ export default function Dashboard({
           gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
         }}
       >
-        {top_items &&
-          top_items.items.map((item) =>
+        {data &&
+          data.items.map((item) =>
             item.type === "artist" ? (
-              <Link
-                href={`/artist/${item.id}/top-tracks`}
-                key={item.id}
-                swrKey={requests["artist_extended"](item.id, "top-tracks")}
-              >
+              <Link href={`/artist/${item.id}/top-tracks`} key={item.id}>
                 <ListCard
                   title={item.name}
                   image={item.images[0]}
@@ -129,8 +126,21 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
   }
   const type = (query.type as string) || "artists";
   const time_range = (query.time_range as string) || "short_term";
+  const data = await fetcher(
+    {
+      url: `/me/top/${type}`,
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      params: {
+        time_range,
+      },
+    },
+    spotify
+  );
   return {
     props: {
+      data,
       session,
       type,
       time_range,

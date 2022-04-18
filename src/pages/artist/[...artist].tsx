@@ -1,10 +1,9 @@
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
-import React, { useEffect } from "react";
-import useSWRImmutable from "swr/immutable";
+import React from "react";
 import invariant from "tiny-invariant";
-import { ExpandableList, ILink, Layout, Link } from "../../components";
-import { fetcher } from "../../util/api";
+import { ExpandableList, ILink, Layout, Link, MiniTrack } from "../../components";
+import { fetcher, spotify } from "../../util/api";
 import { Image } from "../../components";
 import { TopTracks } from "../../components/TopTracks";
 import { requests } from "../../util/helpers";
@@ -12,45 +11,21 @@ import { useRouter } from "next/router";
 import classNames from "classnames";
 import { getBaseArtist } from "../api/artist/[id]";
 import { useWindowSize } from "../../hooks/useWindowSize";
-import { useRelatedArtists } from "../../hooks/useRelatedArtists";
+import { getAlbum } from "../api/album/[id]";
+import { getRelatedArtists } from "../api/artist/related-artists";
 
-const TabLink: React.FC<ILink> = ({ children, href, swrKey, handleAction }) => {
+const ArtistPage = (props) => {
+  const { artist } = props;
   const router = useRouter();
-  const isActive = router.asPath === href;
-  return (
-    <Link
-      href={href}
-      className={classNames("tab", {
-        active: isActive,
-      })}
-      swrKey={swrKey}
-      scroll={false}
-      shallow={true}
-      handleAction={handleAction}
-    >
-      {children}
-    </Link>
-  );
-};
-const ArtistPage = ({ artist, type, path }) => {
-  useEffect(() => {
-    setActiveTab({
-      value: type,
-      key: path,
-    });
-  }, [path, type]);
-  const [activeTab, setActiveTab] = React.useState({
-    value: type,
-    key: path,
-  });
+  const { query } = router;
+  const { include_groups = "" } = query;
   const windowSize = useWindowSize();
   const isDisplayMobile = windowSize.width < 768;
-  const { data } = useSWRImmutable(activeTab.key, (url) => fetcher({ url }));
-  const { data: related_artists } = useRelatedArtists(artist.id, artist.id && !isDisplayMobile);
+
   const tabs = [
     {
       label: "Top Tracks",
-      href: `/artist/${artist.id}/top-tracks`,
+      href: `/artist/${props.artist.id}/top-tracks`,
       value: "top-tracks",
       swrKey: requests["artist_extended"](artist.id, "top-tracks"),
     },
@@ -73,6 +48,72 @@ const ArtistPage = ({ artist, type, path }) => {
       swrKey: requests["artist_extended"](artist.id, "albums", `&include_groups=appears_on`),
     },
   ];
+  const TabLink: React.FC<ILink> = ({ children, href }) => {
+    const isActive = href === router.asPath || router.asPath.startsWith(`${href}/`);
+    return (
+      <Link
+        href={href}
+        className={classNames("tab", {
+          active: isActive,
+        })}
+        scroll={false}
+      >
+        {children}
+      </Link>
+    );
+  };
+
+  const RelatedArtistsList = ({ artists }) => {
+    return (
+      <ExpandableList className="space-y-1" startingLength={artists.length / 2}>
+        {artists.map((artist) => (
+          <li key={artist.id}>
+            <Link
+              href={`/artist/${artist.id}/top-tracks`}
+              className="flex items-center space-x-4 bg-hover p-1 rounded"
+            >
+              <div className="img-wrapper max-w-[40px]">
+                <Image
+                  src={artist.images[0].url}
+                  width={50}
+                  height={50}
+                  alt={artist.name}
+                  className="shadow rounded-full"
+                />
+              </div>
+              <h3 className="truncate py-1 text-sm">{artist.name}</h3>
+            </Link>
+          </li>
+        ))}
+      </ExpandableList>
+    );
+  };
+
+  const AlbumList = ({ albums }) => {
+    if (!albums) return null;
+    return (
+      <>
+        {albums.map((album) => (
+          <Link
+            key={album.id}
+            href={`/artist/${artist.id}/albums/${album.id}?include_groups=${include_groups}`}
+            className="space-y-2"
+          >
+            <div className="img-wrapper">
+              <Image
+                src={album.images[1]?.url}
+                height={album.images[1]?.height}
+                width={album.images[1]?.width}
+                alt={album.name}
+                className="rounded shadow"
+              />
+            </div>
+            <h3 className="truncate py-1 text-sm">{album.name}</h3>
+          </Link>
+        ))}
+      </>
+    );
+  };
 
   return (
     <Layout>
@@ -106,55 +147,71 @@ const ArtistPage = ({ artist, type, path }) => {
           <div className="col-span-6 md:col-span-4 space-y-4">
             <div className="flex space-x-4 border-b dark:border-secondary-green border-slate-200 overflow-y-hidden overflow-x-auto scrollbar-none">
               {tabs.map((tab) => (
-                <TabLink
-                  href={tab.href}
-                  key={tab.href}
-                  handleAction={() =>
-                    setActiveTab({
-                      value: tab.value,
-                      key: tab.swrKey,
-                    })
-                  }
-                  swrKey={tab.swrKey}
-                >
+                <TabLink href={tab.href} key={tab.href}>
                   {tab.label}
                 </TabLink>
               ))}
               {isDisplayMobile && (
-                <TabLink
-                  href={`/artist/${artist.id}/related-artists`}
-                  swrKey={requests["artist_extended"](artist.id, "related-artists")}
-                  handleAction={() =>
-                    setActiveTab({
-                      value: "related-artists",
-                      key: requests["artist_extended"](artist.id, "related-artists"),
-                    })
-                  }
-                >
-                  Related Artists
-                </TabLink>
+                <TabLink href={`/artist/${artist.id}/related-artists`}>Related Artists</TabLink>
               )}
             </div>
-            {data && (
+            {props["top-tracks"] && <TopTracks tracks={props["top-tracks"].tracks} />}
+            {props.albums && (
               <>
-                {activeTab.value === "top-tracks" && <TopTracks tracks={data.tracks} />}
-                {activeTab.value === "albums" && (
-                  <div className="grid gap-4 grid-cols-2 sm:grid-cols-4 lg:grid-cols-5">
-                    <AlbumList albums={data.items} actionHandler={() => {}} />
+                {props.album && (
+                  <div className="dark:bg-primary-green bg-slate-200 rounded shadow p-4 ">
+                    <section className="flex flex-wrap gap-4 items-center">
+                      <div className="img-wrapper w-full sm:max-w-[140px] rounded shadow overflow-hidden">
+                        <Image
+                          src={props.album.images[0]?.url}
+                          width={props.album.images[0]?.width}
+                          height={props.album.images[0]?.height}
+                          alt={props.album.name}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <div>
+                          <span className="subtext text-xs">Album</span>
+                          <h4>{props.album.name}</h4>
+                        </div>
+                        <div>
+                          <div className="subtext text-xs">Release Date</div>
+                          <span className="text-xs">{formatDate(props.album.release_date)}</span>
+                        </div>
+                        <div>
+                          <Link
+                            className="subtext text-xs hover:underline"
+                            href={props.album.external_urls.spotify}
+                          >
+                            Open In Spotify
+                          </Link>
+                        </div>
+                      </div>
+                      <ul className="grid w-full">
+                        {props.album.tracks.items.map((track) => (
+                          <li key={track.id} className="truncate">
+                            <MiniTrack track={track} hasImage={false} isNumbered />
+                          </li>
+                        ))}
+                      </ul>
+                    </section>
                   </div>
                 )}
-                {activeTab.value === "related-artists" && (
-                  <RelatedArtistsList artists={data.artists} />
-                )}
+                <div className="grid gap-4 grid-cols-2 sm:grid-cols-4 lg:grid-cols-5">
+                  <AlbumList albums={props.albums.items} />
+                </div>
               </>
             )}
+            {router.asPath.includes("/related-artists") &&
+              props.related_artists &&
+              isDisplayMobile && <RelatedArtistsList artists={props.related_artists.artists} />}
           </div>
-          {!isDisplayMobile && related_artists ? (
+          {!isDisplayMobile && props.related_artists ? (
             <div className="col-span-2 space-y-4">
               <div className="border-b dark:border-secondary-green border-slate-200">
                 <div className="tab">Related Artists</div>
               </div>
-              <RelatedArtistsList artists={related_artists.artists} />
+              <RelatedArtistsList artists={props.related_artists.artists} />
             </div>
           ) : null}
         </section>
@@ -163,53 +220,9 @@ const ArtistPage = ({ artist, type, path }) => {
   );
 };
 
-const AlbumList = ({ albums, actionHandler }) => {
-  if (!albums) return null;
-  return (
-    <>
-      {albums.map((album) => (
-        <button key={album.id} onClick={() => actionHandler(album)} className="space-y-2">
-          <div className="img-wrapper">
-            <Image
-              src={album.images[1]?.url}
-              height={album.images[1]?.height}
-              width={album.images[1]?.width}
-              alt={album.name}
-              className="rounded shadow"
-            />
-          </div>
-          <h3 className="truncate py-1 text-sm">{album.name}</h3>
-        </button>
-      ))}
-    </>
-  );
-};
-
-const RelatedArtistsList = ({ artists }) => {
-  return (
-    <ExpandableList className="space-y-1" startingLength={artists.length / 2}>
-      {artists.map((artist) => (
-        <li key={artist.id}>
-          <Link
-            href={`/artist/${artist.id}/top-tracks`}
-            swrKey={requests["artist_extended"](artist.id, "top-tracks")}
-            className="flex items-center space-x-4 bg-hover p-1 rounded"
-          >
-            <div className="img-wrapper max-w-[40px]">
-              <Image
-                src={artist.images[0].url}
-                width={50}
-                height={50}
-                alt={artist.name}
-                className="shadow rounded-full"
-              />
-            </div>
-            <h3 className="truncate py-1 text-sm">{artist.name}</h3>
-          </Link>
-        </li>
-      ))}
-    </ExpandableList>
-  );
+const formatDate = (date: string) => {
+  const [year, month, day] = date.split("-");
+  return `${month}/${day}/${year}`;
 };
 
 export default ArtistPage;
@@ -226,21 +239,40 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query, res }
   invariant(query.artist, "No artist id provided");
   invariant(Array.isArray(query.artist), "No Path provided");
   const { artist: artistParams, ...rest } = query;
-  const [id, path = "top-tracks"] = artistParams;
+  const [id, path = "top-tracks", albumId] = artistParams;
   const isAcceptedPath = ["top-tracks", "albums", "related-artists"].includes(path);
+
   if (!isAcceptedPath) {
     return {
       notFound: true,
     };
   }
-  const params = rest ? `&${new URLSearchParams(rest).toString()}` : "";
-  const url = requests["artist_extended"](id, path, params);
-  const artist = await getBaseArtist(id, session);
+  const [artist, data, album, related_artists] = await Promise.all([
+    getBaseArtist(id, session),
+    fetcher(
+      {
+        url: `/artists/${id}/${path}`,
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          "Cache-Control": "s-maxage=3600, stale-while-revalidate",
+        },
+        params: {
+          market: session.user.country,
+          ...rest,
+        },
+      },
+      spotify
+    ),
+    getAlbum(albumId, session),
+    getRelatedArtists(id, session),
+  ]);
+  res.setHeader("Cache-Control", "s-maxage=3600");
   return {
     props: {
       artist,
-      type: path,
-      path: url,
+      [path]: data,
+      album: albumId ? album : null,
+      related_artists,
     },
   };
 };

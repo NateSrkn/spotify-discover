@@ -26,6 +26,7 @@ export const Link: React.FC<ILink> = ({
   const target = isNewTab ? "_blank" : "_self";
   const router = useRouter();
   const handleRouteChange = (event) => {
+    event.stopPropagation();
     if (handleAction) handleAction(event);
     if (!isNewTab) {
       event.preventDefault();

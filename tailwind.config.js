@@ -10,6 +10,7 @@ const config = {
   theme: {
     fontFamily: {
       sans: ["Satoshi", ...defaultTheme.fontFamily.sans],
+      mono: ["Space Mono", ...defaultTheme.fontFamily.mono],
     },
     extend: {
       animation: {

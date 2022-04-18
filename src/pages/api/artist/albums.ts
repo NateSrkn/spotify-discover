@@ -31,6 +31,7 @@ export default async function albums(req: NextApiRequest, res: NextApiResponse) 
     const { query } = req;
     const { id, ...rest } = query;
     const data = await getArtistsAlbums(id as string, rest, session);
+    res.setHeader("Cache-Control", "max-age=3600");
     res.status(200).json({ ...data });
   } catch (error) {
     console.error(error);
