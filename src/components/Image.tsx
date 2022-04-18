@@ -16,6 +16,9 @@ export const Image: React.FC<{
       height={height}
       width={width}
       className={classNames("object-cover h-full max-w-full w-full aspect-square", className)}
+      style={{
+        aspectRatio: `${width}px / ${height}px`,
+      }}
     />
   ) : (
     <div className={classNames("filler-img", className)}>{pullInitials(alt)}</div>
