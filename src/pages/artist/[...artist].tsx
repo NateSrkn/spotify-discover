@@ -254,7 +254,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query, res }
         url: `/artists/${id}/${path}`,
         headers: {
           Authorization: `Bearer ${session.access_token}`,
-          "Cache-Control": "s-maxage=3600, stale-while-revalidate",
         },
         params: {
           market: session.user.country,
@@ -266,7 +265,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query, res }
     getAlbum(albumId, session),
     getRelatedArtists(id, session),
   ]);
-  res.setHeader("Cache-Control", "s-maxage=3600");
+  res.setHeader("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=59");
   return {
     props: {
       artist,

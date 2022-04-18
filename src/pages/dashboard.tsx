@@ -114,7 +114,7 @@ export default function Dashboard({
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ req, query }) => {
+export const getServerSideProps: GetServerSideProps = async ({ req, query, res }) => {
   const session = await getSession({ req });
   if (!session) {
     return {
@@ -138,6 +138,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
     },
     spotify
   );
+  res.setHeader("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=59");
   return {
     props: {
       data,
