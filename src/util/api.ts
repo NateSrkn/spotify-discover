@@ -1,25 +1,27 @@
 import axios, { AxiosInstance, AxiosPromise, AxiosRequestConfig } from "axios";
 import { mutate } from "swr";
+import queryString from "query-string";
 
-export const request = (options: AxiosRequestConfig): AxiosPromise<any> => {
-  const defaultOptions: AxiosRequestConfig = {
-    method: "get",
+const createFetcher = () => {
+  const cache = new Map();
+  return async <T = any>(
+    options: { useCache?: boolean } & AxiosRequestConfig,
+    instance: AxiosInstance = axios
+  ): Promise<T> => {
+    const { useCache = true, ...config } = options;
+    const key = `${config.url}?${queryString.stringify(config.params)}`;
+
+    if (useCache && cache.has(key)) {
+      return cache.get(key);
+    }
+    const response = await instance(config).then((res) => res.data);
+    if (useCache) {
+      cache.set(key, response);
+    }
+    return response;
   };
-  return axios({
-    baseURL: "https://api.spotify.com/v1/",
-    ...defaultOptions,
-    ...options,
-    params: {
-      ...defaultOptions.params,
-      ...options.params,
-    },
-  });
 };
-
-export const fetcher = <T = any>(
-  config: AxiosRequestConfig,
-  instance: AxiosInstance = axios
-): Promise<T> => instance(config).then((res) => res.data);
+export const fetcher = createFetcher();
 
 export const spotify = axios.create({
   baseURL: "https://api.spotify.com/v1/",

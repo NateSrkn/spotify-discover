@@ -10,7 +10,7 @@ export const Image: React.FC<{
   className?: HTMLAttributes<HTMLImageElement>["className"];
 }> = ({ src, alt, height, width, className }) => {
   return src ? (
-    <NextImage
+    <img
       src={src}
       alt={alt}
       height={height}

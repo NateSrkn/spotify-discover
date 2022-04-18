@@ -8,6 +8,7 @@ export const getNowPlaying = async (session) => {
     {
       url: "/me/player/currently-playing",
       headers: { Authorization: `Bearer ${session.access_token}` },
+      useCache: false,
     },
     spotify
   );

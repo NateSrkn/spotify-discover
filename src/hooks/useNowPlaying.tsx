@@ -4,4 +4,4 @@ import { fetcher } from "../util/api";
 import { requests } from "../util/helpers";
 
 export const useNowPlaying = () =>
-  useSWR<NowPlaying>(requests["now_playing"], (url) => fetcher({ url }));
+  useSWR<NowPlaying>(requests["now_playing"], (url) => fetcher({ url, useCache: false }));

@@ -1,13 +1,16 @@
 import { getSession } from "next-auth/react";
 import { Session } from "next-auth";
-import { request } from "../../../util/api";
+import { fetcher, spotify } from "../../../util/api";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export const getUser = async (session: Session) => {
-  const { data } = await request({
-    url: `/me`,
-    headers: { Authorization: `Bearer ${session.access_token}` },
-  });
+  const { data } = await fetcher(
+    {
+      url: `/me`,
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    },
+    spotify
+  );
   return data || {};
 };
 
