@@ -2,47 +2,50 @@ import classNames from "classnames";
 import { GetServerSideProps, NextPage } from "next";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { Fragment } from "react";
-import { ExpandableList, ILink, Image, Layout, Link, Track } from "../../components";
+import { Fragment, useRef } from "react";
+import { ExpandableList, Image, Layout, Link, TabLink } from "../../components";
 import { Album } from "../../components/Album";
 import { ArtistLayout } from "../../components/ArtistLayout";
 import { TopTracks } from "../../components/TopTracks";
 import { useAlbum } from "../../hooks";
-import { useAudio } from "../../providers";
 import { fetcher, spotify } from "../../util/api";
 import { requests } from "../../util/helpers";
 import { getRelatedArtists } from "../api/artist/related-artists";
 
-const TabLink: React.FC<ILink> = ({ children, href, className }) => {
-  const router = useRouter();
-  const isActive = href === router.asPath || router.asPath.startsWith(`${href}/`);
-  return (
-    <Link
-      href={href}
-      className={classNames(
-        "tab",
-        {
-          active: isActive,
-        },
-        className
-      )}
-      scroll={false}
-    >
-      {children}
-    </Link>
-  );
-};
 const ArtistPage: NextPage<{
   id: string;
   type: string;
   query: string;
   top_tracks?: any;
   albums?: any;
+  related_artists: any;
 }> = (props) => {
   const router = useRouter();
-  const { updateAudio } = useAudio();
   const { include_groups = "", album: albumId = undefined } = router.query;
   const { data: album } = useAlbum(albumId as string);
+  const { current: tabs } = useRef([
+    {
+      label: "Top Tracks",
+      href: `/artist/${props.id}/top-tracks`,
+      value: "top-tracks",
+    },
+    {
+      label: "Albums",
+      href: `/artist/${props.id}/albums?include_groups=album`,
+      value: "albums",
+    },
+    {
+      label: "Singles",
+      href: `/artist/${props.id}/albums?include_groups=single`,
+      value: "albums",
+    },
+    {
+      label: "Features",
+      href: `/artist/${props.id}/albums?include_groups=appears_on`,
+      value: "albums",
+    },
+  ]);
+
   const AlbumList = ({ albums }) => {
     if (!albums) return null;
     return (
@@ -90,28 +93,6 @@ const ArtistPage: NextPage<{
     );
   };
 
-  const tabs = [
-    {
-      label: "Top Tracks",
-      href: `/artist/${props.id}/top-tracks`,
-      value: "top-tracks",
-    },
-    {
-      label: "Albums",
-      href: `/artist/${props.id}/albums?include_groups=album`,
-      value: "albums",
-    },
-    {
-      label: "Singles",
-      href: `/artist/${props.id}/albums?include_groups=single`,
-      value: "albums",
-    },
-    {
-      label: "Features",
-      href: `/artist/${props.id}/albums?include_groups=appears_on`,
-      value: "albums",
-    },
-  ];
   return (
     <Layout>
       <ArtistLayout id={props.id}>
@@ -123,7 +104,7 @@ const ArtistPage: NextPage<{
                   {tab.label}
                 </TabLink>
               ))}
-              <TabLink href={`/artist/${props.id}/related-artists`} className="block sm:hidden">
+              <TabLink href={`/artist/${props.id}/related-artists`} className="block md:hidden">
                 Related Artists
               </TabLink>
             </div>
@@ -141,7 +122,7 @@ const ArtistPage: NextPage<{
             )}
           </div>
           {props.type !== "related-artists" ? (
-            <div className="col-span-2 space-y-4 hidden sm:block">
+            <div className="col-span-2 space-y-4 hidden md:block">
               <div className="border-b dark:border-secondary-green border-slate-200">
                 <div className="tab">Related Artists</div>
               </div>
@@ -190,6 +171,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query, res }
     getRelatedArtists(id, session),
   ]);
   const key = type !== "related_artists" ? type.split("-").join("_") : "ignore";
+  res.setHeader("Cache-Control", "s-maxage=3600, stale-while-revalidate");
   return {
     props: {
       id,

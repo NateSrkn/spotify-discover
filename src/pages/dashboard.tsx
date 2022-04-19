@@ -1,11 +1,11 @@
 import { getSession } from "next-auth/react";
 import { GetServerSideProps } from "next";
 import React, { useContext, useEffect, useState } from "react";
-import { requests, toUppercase } from "../util/helpers";
+import { toUppercase } from "../util/helpers";
 import { useNowPlaying } from "../hooks";
 import { Select, Layout, SelectOption } from "../components";
 import { Options, TermLengths, TypesList } from "../util/types/spotify";
-import { Link } from "../components/Link";
+import { ArtistLink } from "../components/Link";
 import { ListCard } from "../components/ListCard";
 import { AudioContext } from "../providers";
 import { useRouter } from "next/router";
@@ -87,22 +87,23 @@ export default function Dashboard({
         {data &&
           data.items.map((item) =>
             item.type === "artist" ? (
-              <Link
-                href={`/artist/${item.id}/top-tracks`}
-                swrKey={requests["artist"](item.id)}
-                key={item.id}
-              >
+              <ArtistLink id={item.id} key={item.id}>
                 <ListCard
                   title={item.name}
                   image={item.images[0]}
                   subtitle={item.genres.join(", ")}
                 />
-              </Link>
+              </ArtistLink>
             ) : (
               <button className="text-left" onClick={() => updateAudio(item)} key={item.id}>
                 <ListCard
                   title={item.name}
-                  subtitle={item.artists.map(({ name }) => name).join(", ")}
+                  subtitle={item.artists.map(({ name, id }, index) => (
+                    <ArtistLink id={id} key={id} className="group">
+                      <span className="group-hover:underline">{name}</span>
+                      {index !== item.artists.length - 1 ? ", " : ""}
+                    </ArtistLink>
+                  ))}
                   image={item.album.images[0]}
                 />
               </button>

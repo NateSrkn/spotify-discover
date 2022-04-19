@@ -12,7 +12,7 @@ class MyDocument extends Document {
             rel="stylesheet"
           />
         </Head>
-        <body className="bg-white dark:bg-dark text-black dark:text-white">
+        <body className="bg-white dark:bg-dark text-black dark:text-white transition">
           <Main />
           <NextScript />
         </body>
