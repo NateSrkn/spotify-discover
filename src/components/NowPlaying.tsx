@@ -1,5 +1,6 @@
 import React from "react";
 import { useNowPlaying } from "../hooks";
+import { requests } from "../util/helpers";
 import { Link } from "./Link";
 export const NowPlaying = () => {
   const { data: now_playing } = useNowPlaying();
@@ -27,8 +28,13 @@ export const NowPlaying = () => {
         <span className="mx-2 text-gray-500 dark:text-pewter-blue hidden sm:block">{" – "}</span>
         <p className="text-gray-500 dark:text-pewter-blue max-w-max truncate">
           {now_playing?.item?.artists?.map((a, index) => (
-            <Link href={`/artist/${a.id}/top-tracks`} key={a.id}>
-              <span>{a.name}</span>
+            <Link
+              href={`/artist/${a.id}/top-tracks`}
+              swrKey={requests["artist"](a.id)}
+              key={a.id}
+              className="group"
+            >
+              <span className="group-hover:underline">{a.name}</span>
               {index !== now_playing.item.artists.length - 1 ? ", " : ""}
             </Link>
           )) ?? "Spotify"}

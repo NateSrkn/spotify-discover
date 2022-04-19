@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, createContext } from "react";
+import { useState, useEffect, useRef, createContext, useContext } from "react";
 import { SimpleTrack, Track } from "../util/types/spotify";
 export const AudioContext = createContext<{
   isPlaying: boolean;
@@ -17,6 +17,11 @@ export const AudioContext = createContext<{
   isMuted: false,
   handleSetMute: () => {},
 });
+
+export const useAudio = () => {
+  const value = useContext(AudioContext);
+  return value;
+};
 
 export const AudioTracker = ({ children }) => {
   const [isPlaying, setIsPlaying] = useState(false);

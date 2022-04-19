@@ -1,5 +1,4 @@
 import { pullInitials } from "../util/helpers";
-import NextImage from "next/image";
 import classNames from "classnames";
 import { HTMLAttributes } from "react";
 export const Image: React.FC<{
@@ -17,10 +16,17 @@ export const Image: React.FC<{
       width={width}
       className={classNames("object-cover h-full max-w-full w-full aspect-square", className)}
       style={{
-        aspectRatio: `${width}px / ${height}px`,
+        aspectRatio: `${width} / ${height}`,
       }}
     />
   ) : (
-    <div className={classNames("filler-img", className)}>{pullInitials(alt)}</div>
+    <div
+      className={classNames("filler-img aspect-square", className)}
+      style={{
+        aspectRatio: `${width} / ${height}`,
+      }}
+    >
+      {pullInitials(alt)}
+    </div>
   );
 };
