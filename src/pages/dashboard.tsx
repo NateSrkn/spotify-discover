@@ -1,27 +1,28 @@
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import { GetServerSideProps } from "next";
 import React, { useContext, useEffect, useState } from "react";
 import { toUppercase } from "../util/helpers";
-import { useNowPlaying } from "../hooks";
+import { useNowPlaying, useTopItems } from "../hooks";
 import { Select, Layout, SelectOption } from "../components";
 import { Options, TermLengths, TypesList } from "../util/types/spotify";
 import { ArtistLink } from "../components/Link";
-import { ListCard } from "../components/ListCard";
+import { ListCard, SkeletonListCard } from "../components/ListCard";
 import { AudioContext } from "../providers";
 import { useRouter } from "next/router";
-import { fetcher, spotify } from "../util/api";
+import { Skeleton } from "../components/Skeleton";
 
 export default function Dashboard({
   type = TypesList.ARTISTS,
   time_range = TermLengths.SHORT_TERM,
-  data,
 }) {
+  const { status } = useSession();
   const { updateAudio } = useContext(AudioContext);
   const [options, setOptions] = useState<Options>({
     type,
     time_range,
   });
   const { data: now_playing } = useNowPlaying();
+  const { data } = useTopItems(type, time_range);
   const router = useRouter();
   const types = ["tracks", "artists"];
   const titles = {
@@ -29,6 +30,13 @@ export default function Dashboard({
     medium_term: "Last 6 Months",
     short_term: "Last Month",
   };
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/");
+    }
+  }, [status]);
+
   useEffect(() => {
     setOptions({ ...options, ...router.query });
   }, [router.query]);
@@ -84,7 +92,7 @@ export default function Dashboard({
           gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
         }}
       >
-        {data &&
+        {data ? (
           data.items.map((item) =>
             item.type === "artist" ? (
               <ArtistLink id={item.id} key={item.id}>
@@ -108,7 +116,10 @@ export default function Dashboard({
                 />
               </button>
             )
-          )}
+          )
+        ) : (
+          <Skeleton count={20} component={SkeletonListCard} />
+        )}
       </div>
       {/* {hasNextPage && (
         <Button action={fetchNextPage} className="mt-5">
@@ -131,23 +142,8 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query, res }
   }
   const type = (query.type as string) || "artists";
   const time_range = (query.time_range as string) || "short_term";
-  const data = await fetcher(
-    {
-      url: `/me/top/${type}`,
-      headers: {
-        Authorization: `Bearer ${session.access_token}`,
-      },
-      params: {
-        time_range,
-      },
-    },
-    spotify
-  );
-  res.setHeader("Cache-Control", "private, s-maxage=3600, stale-while-revalidate=59");
   return {
     props: {
-      data,
-      session,
       type,
       time_range,
     },

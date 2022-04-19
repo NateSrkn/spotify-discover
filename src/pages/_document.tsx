@@ -11,6 +11,7 @@ class MyDocument extends Document {
             href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap"
             rel="stylesheet"
           />
+          <link href="https://api.fontshare.com/css?f[]=satoshi@1&display=swap" rel="stylesheet" />
         </Head>
         <body className="bg-white dark:bg-dark text-black dark:text-white transition">
           <Main />

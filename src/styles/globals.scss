@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 @layer base {
-  @import "fonts";
   html,
   body {
     padding: 0;
@@ -67,15 +66,15 @@
     @apply text-base truncate;
   }
   .filler-img {
-    @apply w-full h-full bg-gray-400 flex-shrink-0 flex justify-center items-center shadow-md;
+    @extend .secondary-bg;
+    @apply w-full h-full flex-shrink-0 flex justify-center items-center shadow-md;
+  }
+  .skeleton-text {
+    @extend .secondary-bg;
+    @apply w-full h-4 animate-pulse rounded;
   }
   .card-sm-text {
     @apply font-medium truncate text-sm;
-  }
-  .badge {
-    @extend .subtext;
-    @apply uppercase bg-gray-100 dark:bg-primary-green;
-    font-size: 10px;
   }
 
   ul {
@@ -83,81 +82,41 @@
       @apply border-t border-r border-l last:border-b;
     }
   }
-  .sm-img {
-    @apply w-full h-full object-contain max-w-[40px] max-h-[40px];
+
+  .img-wrap {
+    @apply flex flex-shrink-0 flex-grow object-contain object-center aspect-square;
+    &.full-round {
+      @apply rounded-full shadow overflow-hidden;
+    }
+    &.soft-round {
+      @apply rounded shadow overflow-hidden;
+    }
+    &.sm-img {
+      @apply max-w-[40px] max-h-[40px];
+    }
+    &.md-img {
+      @apply max-w-[80px] max-h-[80px];
+    }
+    &.lg-img {
+      @apply max-w-[200px] max-h-[200px];
+    }
+    &.xl-img {
+      @apply max-w-[320px] max-h-[320px];
+    }
   }
 
-  .img-wrapper {
-    @apply flex shadow-md flex-shrink-0;
-    &.artist {
-      @extend .is-rounded;
-      width: 60px;
-      height: 60px;
-      @media (min-width: 640px) {
-        width: 100px;
-        height: 100px;
-      }
-      &.is-expanded {
-        width: 100px;
-        height: 100px;
-        @media (min-width: 640px) {
-          width: 120px;
-          height: 120px;
-        }
-      }
-    }
-
-    &.breadcrumb {
-      width: 40px;
-      height: 40px;
-    }
-
-    &.album {
-      width: 100px;
-      height: 100px;
-      @media (min-width: 640px) {
-        width: 120px;
-        height: 120px;
-      }
-    }
-
-    &.is-rounded {
-      @apply rounded-full overflow-hidden;
-    }
-
-    img {
-      @apply object-cover object-center w-full h-full;
-    }
+  .sticky-header {
+    position: sticky;
+    z-index: 10;
+    top: 0;
+    // @apply bg-white dark:bg-dark transition-all;
+    backdrop-filter: saturate(100%) blur(20px);
   }
   .tab {
     @apply pb-2 sm:flex-none whitespace-nowrap;
     &.active {
       @apply border-b dark:border-slate-200 border-primary-green;
     }
-  }
-  .track,
-  .mini-track {
-    .icon {
-      @apply ml-auto mr-2 text-black dark:text-white fill-current;
-      visibility: hidden;
-      &.is-active {
-        visibility: visible;
-      }
-    }
-
-    &:hover,
-    &:focus {
-      .icon {
-        visibility: visible;
-      }
-    }
-  }
-  .sticky-header {
-    position: sticky;
-    z-index: 10;
-    top: 0;
-    @apply bg-white dark:bg-dark transition-all;
-    // backdrop-filter: saturate(100%) blur(20px);
   }
   button {
     @apply cursor-pointer text-left;

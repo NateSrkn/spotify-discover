@@ -22,7 +22,7 @@ export const Header = () => {
                 <NowPlaying />
               </div>
               <Dropdown>
-                <Trigger className="overflow-hidden sm-img rounded-full">
+                <Trigger className="img-wrap sm-img full-round">
                   <Image
                     src={session.user?.image}
                     alt={session.user.name}
