@@ -48,8 +48,17 @@
   .primary-bg {
     @apply bg-slate-200 dark:bg-primary-green;
   }
+  .secondary-bg {
+    @apply bg-slate-100 dark:bg-secondary-green;
+  }
+  .primary-border {
+    @apply border-slate-200 dark:border-primary-green;
+  }
+  .secondary-border {
+    @apply border-slate-100 dark:border-secondary-green;
+  }
   .bg-hover {
-    @apply hover:bg-gray-200 dark:hover:bg-secondary-green transition-all;
+    @apply hover:bg-slate-200 dark:hover:bg-primary-green transition-all;
   }
   .bg-reverse-hover {
     @apply hover:bg-slate-100 dark:hover:bg-secondary-green transition-all;
@@ -73,6 +82,9 @@
     .list-border {
       @apply border-t border-r border-l last:border-b;
     }
+  }
+  .sm-img {
+    @apply w-full h-full object-contain max-w-[40px] max-h-[40px];
   }
 
   .img-wrapper {
@@ -144,7 +156,8 @@
     position: sticky;
     z-index: 10;
     top: 0;
-    backdrop-filter: saturate(180%) blur(20px);
+    @apply bg-white dark:bg-dark transition-all;
+    // backdrop-filter: saturate(100%) blur(20px);
   }
   button {
     @apply cursor-pointer text-left;

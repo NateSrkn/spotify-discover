@@ -3,7 +3,7 @@ import { Image } from "./Image";
 export const ListCard: React.FC<{
   image?: SpotifyImage;
   title: string;
-  subtitle: string;
+  subtitle: string | React.ReactNode;
 }> = ({ image, title, subtitle }) => {
   return (
     <div className="flex items-center rounded overflow-hidden border border-slate-200 dark:border-primary-green gap-4 relative dark:hover:bg-primary-green hover:bg-slate-200 hover:scale-105 transition-all">

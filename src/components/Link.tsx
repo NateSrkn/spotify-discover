@@ -1,8 +1,10 @@
+import cx from "classnames";
 import NextLink, { LinkProps } from "next/link";
 import { useRouter } from "next/router";
 import { useSWRConfig } from "swr";
 import { useTimeout } from "../hooks";
 import { prefetch } from "../util/api";
+import { requests } from "../util/helpers";
 
 export interface ILink extends LinkProps {
   forceNewTab?: boolean;
@@ -66,3 +68,33 @@ export const Link: React.FC<ILink> = ({
     </NextLink>
   );
 };
+
+export const ArtistLink: React.FC<{ id: string } & ILink> = ({ id, children, ...rest }) => {
+  return (
+    <Link href={`/artist/${id}/top-tracks`} swrKey={requests["artist"](id)} {...rest}>
+      {children}
+    </Link>
+  );
+};
+
+export const TabLink: React.FC<ILink> = ({ children, href, className }) => {
+  const router = useRouter();
+  const isActive = href === router.asPath || router.asPath.startsWith(`${href}/`);
+  return (
+    <Link
+      href={href}
+      className={cx(
+        "tab",
+        {
+          active: isActive,
+        },
+        className
+      )}
+      scroll={false}
+    >
+      {children}
+    </Link>
+  );
+};
+
+export default Link;
