@@ -45,8 +45,14 @@
   .bordered-item {
     @apply border-gray-200 dark:border-gray-800;
   }
+  .primary-bg {
+    @apply bg-slate-200 dark:bg-primary-green;
+  }
   .bg-hover {
     @apply hover:bg-gray-200 dark:hover:bg-secondary-green transition-all;
+  }
+  .bg-reverse-hover {
+    @apply hover:bg-slate-100 dark:hover:bg-secondary-green transition-all;
   }
   .title {
     @apply text-base truncate;
@@ -139,5 +145,8 @@
     z-index: 10;
     top: 0;
     backdrop-filter: saturate(180%) blur(20px);
+  }
+  button {
+    @apply cursor-pointer text-left;
   }
 }

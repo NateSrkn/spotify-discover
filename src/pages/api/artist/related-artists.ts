@@ -22,7 +22,6 @@ export default async function relatedArtists(req: NextApiRequest, res: NextApiRe
     if (!session) throw res.status(401).json({ message: "Unauthorized" });
     const { query } = req;
     const data = await getRelatedArtists(query.id as string, session);
-    res.setHeader("Cache-Control", "max-age=3600");
     res.status(200).json({ ...data });
   } catch (error) {
     console.error(error);

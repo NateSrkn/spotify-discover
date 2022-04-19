@@ -21,7 +21,7 @@ export const Link: React.FC<ILink> = ({
 }) => {
   const { cache } = useSWRConfig();
   const [handleSetTimeout, handleClearTimeout] = useTimeout();
-  const isNewTab = forceNewTab || href.startsWith("http");
+  const isNewTab = forceNewTab || (typeof href === "string" && href.startsWith("http"));
   const rel = isNewTab ? "noopener noreferrer" : undefined;
   const target = isNewTab ? "_blank" : "_self";
   const router = useRouter();

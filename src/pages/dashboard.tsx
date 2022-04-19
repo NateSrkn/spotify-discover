@@ -1,7 +1,7 @@
 import { getSession } from "next-auth/react";
 import { GetServerSideProps } from "next";
 import React, { useContext, useEffect, useState } from "react";
-import { toUppercase } from "../util/helpers";
+import { requests, toUppercase } from "../util/helpers";
 import { useNowPlaying } from "../hooks";
 import { Select, Layout, SelectOption } from "../components";
 import { Options, TermLengths, TypesList } from "../util/types/spotify";
@@ -87,7 +87,11 @@ export default function Dashboard({
         {data &&
           data.items.map((item) =>
             item.type === "artist" ? (
-              <Link href={`/artist/${item.id}/top-tracks`} key={item.id}>
+              <Link
+                href={`/artist/${item.id}/top-tracks`}
+                swrKey={requests["artist"](item.id)}
+                key={item.id}
+              >
                 <ListCard
                   title={item.name}
                   image={item.images[0]}

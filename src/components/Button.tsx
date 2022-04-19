@@ -22,14 +22,10 @@ export const Button = ({
     action();
   };
 
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-  };
   return (
     <button
       className={classNames("button background-hover w-max hover:scale-105", className)}
       onClick={handleClick}
-      onKeyPress={handleKeyPress}
       {...rest}
     >
       {Icon && iconPosition === "left" ? <Icon className="mr-1 text-xl" /> : null}
