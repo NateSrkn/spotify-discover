@@ -143,7 +143,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query, res }
     },
     spotify
   );
-  res.setHeader("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=59");
+  res.setHeader("Cache-Control", "private, s-maxage=3600, stale-while-revalidate=59");
   return {
     props: {
       data,
