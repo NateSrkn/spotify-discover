@@ -1,8 +1,8 @@
 import classNames from "classnames";
 import { GetServerSideProps, NextPage } from "next";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { Fragment, useRef } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import { ExpandableList, Image, Layout, Link, TabLink } from "../../components";
 import { Album } from "../../components/Album";
 import { ArtistLayout } from "../../components/ArtistLayout";
@@ -21,6 +21,7 @@ const ArtistPage: NextPage<{
   related_artists: any;
 }> = (props) => {
   const router = useRouter();
+  const { data, status } = useSession();
   const { include_groups = "", album: albumId = undefined } = router.query;
   const { data: album } = useAlbum(albumId as string);
   const { current: tabs } = useRef([
@@ -45,7 +46,11 @@ const ArtistPage: NextPage<{
       value: "albums",
     },
   ]);
-
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/");
+    }
+  }, [status]);
   const AlbumList = ({ albums }) => {
     if (!albums) return null;
     return (
@@ -57,7 +62,7 @@ const ArtistPage: NextPage<{
             className="space-y-2"
             shallow={true}
           >
-            <div className="img-wrapper rounded shadow overflow-hidden">
+            <div className="img-wrap soft-round">
               <Image
                 src={album.images[1]?.url}
                 height={album.images[1]?.height}
@@ -82,7 +87,7 @@ const ArtistPage: NextPage<{
               swrKey={requests["artist"](artist.id)}
               className="flex items-center space-x-4 bg-hover p-1 rounded"
             >
-              <div className="img-wrapper max-w-[40px] max-h-[40px] flex-grow shadow rounded-full overflow-hidden">
+              <div className="img-wrap max-w-[40px] max-h-[40px] flex-grow shadow rounded-full overflow-hidden">
                 <Image src={artist.images[0]?.url} width={50} height={50} alt={artist.name} />
               </div>
               <h3 className="truncate py-1 text-sm">{artist.name}</h3>
@@ -136,12 +141,17 @@ const ArtistPage: NextPage<{
 };
 
 export default ArtistPage;
-const formatDate = (date: string) => {
-  const [year, month, day] = date.split("-");
-  return `${month}/${day}/${year}`;
-};
+
 export const getServerSideProps: GetServerSideProps = async ({ req, query, res }) => {
   const session = await getSession({ req });
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
   const { artist, ...params } = query;
   const [id, type] = typeof artist === "string" ? [artist, "top-tracks"] : artist;
   const isAcceptedPath = ["top-tracks", "albums", "related-artists"].includes(type);

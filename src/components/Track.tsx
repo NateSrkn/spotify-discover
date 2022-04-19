@@ -1,8 +1,4 @@
-import React, { useContext } from "react";
-import { SimpleTrack } from "../util/types/spotify";
-import { Image } from ".";
-import { AudioContext } from "../providers";
-import cx from "classnames";
+import React from "react";
 import { FiPlay, FiPause } from "react-icons/fi";
 import { Link } from "./Link";
 import { requests } from "../util/helpers";
@@ -11,13 +7,12 @@ export const Track = ({ track, hasImage = false }) => {
   return (
     <div className="flex items-center gap-4 w-full truncate">
       {hasImage ? (
-        <div className="img-wrapper breadcrumb">
+        <div className="img-wrap sm-img soft-round">
           <img
             src={track.album.images[0]?.url}
             height={track.album.images[0]?.height}
             width={track.album.images[0]?.width}
             alt={track.name}
-            className="rounded shadow"
           />
         </div>
       ) : null}
@@ -60,7 +55,7 @@ export const Track = ({ track, hasImage = false }) => {
 //       tabIndex={isPlayable ? 0 : -1}
 //     >
 //       <div className="flex flex-row items-center gap-4">
-//         <div className="img-wrapper artist">
+//         <div className="img-wrap artist">
 //           <Image
 //             src={track.images[0]?.url}
 //             height={track.images[0]?.height}
@@ -116,7 +111,7 @@ export const Track = ({ track, hasImage = false }) => {
 //         )}
 //         <div className="flex items-center gap-4 w-full truncate">
 //           {hasImage && (
-//             <div className="img-wrapper breadcrumb">
+//             <div className="img-wrap breadcrumb">
 //               <Image
 //                 src={track.album.images[0]?.url}
 //                 height={track.album.images[0]?.height}

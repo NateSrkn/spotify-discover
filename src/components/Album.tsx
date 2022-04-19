@@ -12,7 +12,7 @@ export const Album = ({ album }) => {
   return (
     <div className="col-span-full mb-4 primary-bg rounded shadow p-4 space-y-4">
       <div className="flex gap-4 justify-center items-center flex-wrap md:flex-nowrap w-full text-center sm:text-left">
-        <div className="img-wrapper rounded shadow h-[200px] w-[200px] overflow-hidden">
+        <div className="img-wrap rounded shadow h-[200px] w-[200px] overflow-hidden">
           <Image
             src={album.images[0].url}
             width={album.images[0].width}
@@ -60,4 +60,9 @@ export const Album = ({ album }) => {
       </div>
     </div>
   );
+};
+
+const formatDate = (date: string) => {
+  const [year, month, day] = date.split("-");
+  return `${month}/${day}/${year}`;
 };

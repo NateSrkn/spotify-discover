@@ -47,7 +47,7 @@ export const ListItem = ({
         })}
       >
         <div
-          className={cx(`img-wrapper ${image.size ?? ""}`, {
+          className={cx(`img-wrap ${image.size ?? ""}`, {
             "is-rounded": image?.isRounded,
           })}
         >

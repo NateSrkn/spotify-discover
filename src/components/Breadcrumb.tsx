@@ -17,7 +17,7 @@ export const Breadcrumb = ({ crumb, isActive, onClick = null, ...rest }) => {
       {...rest}
     >
       <div
-        className={cx("img-wrapper breadcrumb is-rounded", {
+        className={cx("img-wrap breadcrumb is-rounded", {
           "border-2 dark:border-white border-black": isActive,
           "cursor-pointer": onClick,
         })}
