@@ -1,6 +1,7 @@
 import { pullInitials } from "../util/helpers";
 import classNames from "classnames";
 import { HTMLAttributes } from "react";
+import NextImage from "next/image";
 export const Image: React.FC<{
   src: string;
   alt: string;
@@ -9,7 +10,7 @@ export const Image: React.FC<{
   className?: HTMLAttributes<HTMLImageElement>["className"];
 }> = ({ src, alt, height, width, className }) => {
   return src ? (
-    <img
+    <NextImage
       src={src}
       alt={alt}
       height={height}

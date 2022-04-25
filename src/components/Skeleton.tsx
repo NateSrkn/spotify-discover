@@ -1,6 +1,9 @@
-import { Fragment } from "react";
+import React, { Fragment } from "react";
 
-export const Skeleton = ({ count, component: Component }) => {
+export const Skeleton: React.FC<{
+  count: number;
+  component: React.ReactNode;
+}> = ({ count, component: Component }) => {
   const items = Array.from({ length: count }, (_, index) => index);
   return (
     <Fragment>

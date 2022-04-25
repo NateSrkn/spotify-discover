@@ -25,7 +25,7 @@ export const ArtistLayout: React.FC<{ id: string }> = ({ id, children }) => {
               </div>
             </section>
             <section className="flex flex-wrap gap-4 justify-center sm:justify-start">
-              <Link href={artist.external_urls.spotify} className="button bg-hover">
+              <Link href={artist.external_urls.spotify} className="text-sm hover:underline">
                 Open In Spotify
               </Link>
             </section>

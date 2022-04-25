@@ -1,7 +1,6 @@
-import { SpotifyImage } from "../util/types/spotify";
 import { Image } from "./Image";
 export const ListCard: React.FC<{
-  image?: SpotifyImage;
+  image?: string;
   title: string;
   subtitle: string | React.ReactNode;
 }> = ({ image, title, subtitle }) => {
@@ -9,9 +8,9 @@ export const ListCard: React.FC<{
     <div className="flex items-center rounded overflow-hidden border border-slate-200 dark:border-primary-green gap-4 relative dark:hover:bg-primary-green hover:bg-slate-200 hover:scale-105 transition-all">
       <div className="flex-shrink-0 p-2 dark:bg-primary-green bg-slate-200  w-full h-full max-w-[100px] max-h-[100px] sm:max-w-[125px] sm:max-h-[125px]">
         <Image
-          src={image.url}
-          height={image.height}
-          width={image.width}
+          src={image}
+          height={500}
+          width={500}
           alt={title}
           className="rounded-full shadow-lg"
         />

@@ -79,7 +79,10 @@ export const ArtistLink: React.FC<{ id: string } & ILink> = ({ id, children, ...
 
 export const TabLink: React.FC<ILink> = ({ children, href, className }) => {
   const router = useRouter();
-  const isActive = href === router.asPath || router.asPath.startsWith(`${href}/`);
+  const { album } = router.query;
+  const isActive = album
+    ? `${href}&album=${album}` === router.asPath
+    : href === router.asPath || router.asPath.startsWith(`${href}/`);
   return (
     <Link
       href={href}

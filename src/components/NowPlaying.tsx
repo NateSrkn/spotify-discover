@@ -7,7 +7,6 @@ export const NowPlaying = () => {
   const { data } = useSession();
   const { data: now_playing } = useNowPlaying(!!data);
   const isPlaying = !!now_playing?.item;
-
   return (
     <div className="flex sm:flex-row space-x-0 sm:space-x-2 w-full text-sm items-center">
       <div>
