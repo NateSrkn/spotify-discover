@@ -4,7 +4,7 @@ import { getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { Fragment, useEffect, useRef } from "react";
 import { ExpandableList, Image, Layout, Link, TabLink } from "../../components";
-import { Album } from "../../components/Album";
+import { Album, SkeletonAlbum } from "../../components/Album";
 import { ArtistLayout } from "../../components/ArtistLayout";
 import { TopTracks } from "../../components/TopTracks";
 import { useAlbum } from "../../hooks";
@@ -21,10 +21,10 @@ const ArtistPage: NextPage<{
   related_artists: any;
 }> = (props) => {
   const router = useRouter();
-  const { data, status } = useSession();
+  const { status } = useSession();
   const { include_groups = "", album: albumId = undefined } = router.query;
   const { data: album } = useAlbum(albumId as string);
-  const { current: tabs } = useRef([
+  const tabs = [
     {
       label: "Top Tracks",
       href: `/artist/${props.id}/top-tracks`,
@@ -45,7 +45,7 @@ const ArtistPage: NextPage<{
       href: `/artist/${props.id}/albums?include_groups=appears_on`,
       value: "albums",
     },
-  ]);
+  ];
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/");
@@ -59,7 +59,7 @@ const ArtistPage: NextPage<{
           <Link
             key={album.id}
             href={`/artist/${props.id}/albums?include_groups=${include_groups}&album=${album.id}`}
-            className="space-y-2"
+            className="p-2 bg-hover transition rounded"
             shallow={true}
           >
             <div className="img-wrap soft-round">
@@ -116,8 +116,11 @@ const ArtistPage: NextPage<{
             {props.top_tracks && <TopTracks tracks={props.top_tracks.tracks} />}
             {props.albums && (
               <Fragment>
+                {!album && albumId && (
+                  <SkeletonAlbum trackCount={router.query?.include_groups === "single" ? 1 : 10} />
+                )}
                 {album && albumId && <Album album={album} />}
-                <div className="grid gap-4 grid-cols-2 sm:grid-cols-4 lg:grid-cols-5">
+                <div className="grid gap-2 grid-cols-2 sm:grid-cols-4 lg:grid-cols-5">
                   <AlbumList albums={props.albums.items} />
                 </div>
               </Fragment>

@@ -2,18 +2,14 @@ import React from "react";
 import { FiPlay, FiPause } from "react-icons/fi";
 import { Link } from "./Link";
 import { requests } from "../util/helpers";
-
+import { Image } from "./Image";
 export const Track = ({ track, hasImage = false }) => {
+  if (!track) return <SkeletonTrack hasImage={hasImage} />;
   return (
     <div className="flex items-center gap-4 w-full truncate">
       {hasImage ? (
         <div className="img-wrap sm-img soft-round">
-          <img
-            src={track.album.images[0]?.url}
-            height={track.album.images[0]?.height}
-            width={track.album.images[0]?.width}
-            alt={track.name}
-          />
+          <Image src={track.album.images[0]?.url} height={100} width={100} alt={track.name} />
         </div>
       ) : null}
       <div className="flex flex-col truncate">
@@ -32,6 +28,22 @@ export const Track = ({ track, hasImage = false }) => {
             </span>
           ))}
         </div>
+      </div>
+    </div>
+  );
+};
+
+export const SkeletonTrack = ({ hasImage }) => {
+  return (
+    <div className="flex items-center gap-4 w-full">
+      {hasImage ? (
+        <div className="img-wrap sm-img soft-round w-full h-full">
+          <Image src={undefined} height={100} width={100} alt={""} />
+        </div>
+      ) : null}
+      <div className="flex flex-col gap-2 w-full">
+        <div className="skeleton-text" />
+        <div className="skeleton-text" />
       </div>
     </div>
   );

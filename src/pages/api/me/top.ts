@@ -7,12 +7,13 @@ import { fetcher, spotify } from "../../../util/api";
 export const getTopItems = (
   type: Options["type"],
   time_range: Options["time_range"],
+  offset: string,
   session: Session
 ) =>
   fetcher<PagingObject<SimpleArtist | SimpleTrack>>(
     {
       url: `me/top/${type}`,
-      params: { time_range },
+      params: { time_range, offset: offset || 0 },
       headers: {
         Authorization: `Bearer ${session.access_token}`,
       },
@@ -25,7 +26,7 @@ export default async function topItems(req: NextApiRequest, res: NextApiResponse
     const session: Session = await getSession({ req });
     if (!session) throw res.status(401).json({ message: "Unauthorized" });
     const { query } = req;
-    const data = await getTopItems(query.type, query.time_range, session);
+    const data = await getTopItems(query.type, query.time_range, query.offset || "0", session);
     res.status(200).json({ ...data });
   } catch (error) {
     console.error(error);

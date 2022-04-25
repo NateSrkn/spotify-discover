@@ -2,17 +2,18 @@ import classNames from "classnames";
 import { useAudio } from "../providers";
 import { Image } from "./Image";
 import { Link } from "./Link";
-import { Track } from "./Track";
+import { Skeleton } from "./Skeleton";
+import { SkeletonTrack, Track } from "./Track";
 
 export const Album = ({ album }) => {
   const { updateAudio } = useAudio();
   let rowCount = Math.floor(album.total_tracks / 2);
   if (album.total_tracks % 2) rowCount++;
-  if (!album) return null;
+  if (!album) return <SkeletonAlbum />;
   return (
     <div className="col-span-full mb-4 primary-bg rounded shadow p-4 space-y-4">
       <div className="flex gap-4 justify-center items-center flex-wrap md:flex-nowrap w-full text-center sm:text-left">
-        <div className="img-wrap rounded shadow h-[200px] w-[200px] overflow-hidden">
+        <div className="img-wrap rounded shadow h-full w-[200px] overflow-hidden">
           <Image
             src={album.images[0].url}
             width={album.images[0].width}
@@ -57,6 +58,25 @@ export const Album = ({ album }) => {
             <Track track={track} />
           </button>
         ))}
+      </div>
+    </div>
+  );
+};
+
+export const SkeletonAlbum = ({ trackCount = 10 }) => {
+  return (
+    <div className="col-span-full mb-4 primary-bg rounded shadow p-4 space-y-4">
+      <div className="flex gap-4 justify-center items-center flex-wrap md:flex-nowrap w-full text-center sm:text-left">
+        <div className="img-wrap rounded shadow h-full w-[200px] overflow-hidden">
+          <Image src={undefined} width={200} height={200} alt={""} />
+        </div>
+        <div className="flex flex-col w-full gap-2">
+          <div className="skeleton-text h-7" />
+          <div className="skeleton-text" />
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Skeleton count={trackCount} component={() => <SkeletonTrack hasImage />} />
       </div>
     </div>
   );
