@@ -46,6 +46,7 @@ const ArtistPage: NextPage<{
       value: "albums",
     },
   ];
+  const albumRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/");
@@ -61,6 +62,14 @@ const ArtistPage: NextPage<{
             href={`/artist/${props.id}/albums?include_groups=${include_groups}&album=${album.id}`}
             className="p-2 bg-hover transition rounded"
             shallow={true}
+            handleAction={() => {
+              if (window.scrollY > albumRef.current?.offsetTop) {
+                window.scrollTo({
+                  top: albumRef.current?.offsetTop || 0,
+                  behavior: "smooth",
+                });
+              }
+            }}
           >
             <div className="img-wrap soft-round">
               <Image
@@ -116,10 +125,14 @@ const ArtistPage: NextPage<{
             {props.top_tracks && <TopTracks tracks={props.top_tracks.tracks} />}
             {props.albums && (
               <Fragment>
-                {!album && albumId && (
-                  <SkeletonAlbum trackCount={router.query?.include_groups === "single" ? 1 : 10} />
-                )}
-                {album && albumId && <Album album={album} />}
+                <div ref={albumRef}>
+                  {!album && albumId && (
+                    <SkeletonAlbum
+                      trackCount={router.query?.include_groups === "single" ? 1 : 10}
+                    />
+                  )}
+                  {album && albumId && <Album album={album} />}
+                </div>
                 <div className="grid gap-2 grid-cols-2 sm:grid-cols-4 lg:grid-cols-5">
                   <AlbumList albums={props.albums.items} />
                 </div>
