@@ -1,6 +1,7 @@
 import cx from "classnames";
 import NextLink, { LinkProps } from "next/link";
 import { useRouter } from "next/router";
+import React from "react";
 import { useSWRConfig } from "swr";
 import { useTimeout } from "../hooks";
 import { prefetch } from "../util/api";
@@ -11,6 +12,7 @@ export interface ILink extends LinkProps {
   className?: string;
   swrKey?: string | string[];
   handleAction?: (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
+  children: React.ReactNode;
 }
 export const Link: React.FC<ILink> = ({
   href,
@@ -53,23 +55,28 @@ export const Link: React.FC<ILink> = ({
     }, 200);
 
   return (
-    <NextLink href={href} passHref {...props}>
-      <a
-        rel={rel}
-        target={target}
-        onClick={handleRouteChange}
-        className={className}
-        onMouseEnter={handlePrefetch}
-        onMouseLeave={handleClearTimeout}
-        onFocus={handlePrefetch}
-      >
-        {children}
-      </a>
+    <NextLink
+      href={href}
+      passHref
+      {...props}
+      rel={rel}
+      target={target}
+      onClick={handleRouteChange}
+      className={className}
+      onMouseEnter={handlePrefetch}
+      onMouseLeave={handleClearTimeout}
+      onFocus={handlePrefetch}
+    >
+      {children}
     </NextLink>
   );
 };
 
-export const ArtistLink: React.FC<{ id: string } & ILink> = ({ id, children, ...rest }) => {
+export const ArtistLink: React.FC<{ id: string; children: React.ReactNode } & ILink> = ({
+  id,
+  children,
+  ...rest
+}) => {
   return (
     <Link href={`/artist/${id}/top-tracks`} swrKey={requests["artist"](id)} {...rest}>
       {children}

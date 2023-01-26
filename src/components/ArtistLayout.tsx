@@ -1,15 +1,19 @@
+import React from "react";
 import { useArtist } from "../hooks";
 import { Image } from "./Image";
 import { Link } from "./Link";
 
-export const ArtistLayout: React.FC<{ id: string }> = ({ id, children }) => {
+export const ArtistLayout: React.FC<{ id: string; children: React.ReactNode }> = ({
+  id,
+  children,
+}) => {
   const { data: artist } = useArtist(id);
   if (!artist) return <SkeletonArtistLayout>{children}</SkeletonArtistLayout>;
   return (
     <div className="space-y-8 relative">
       <div className="primary-bg w-full rounded py-6 px-4 shadow">
         <div className="flex items-center gap-4 text-center md:text-left flex-wrap justify-center md:justify-start">
-          <div className="img-wrap full-round lg-img">
+          <div className="img-wrap rounded overflow-hidden lg-img">
             <Image
               src={artist.images[0]?.url}
               width={200}
@@ -25,7 +29,10 @@ export const ArtistLayout: React.FC<{ id: string }> = ({ id, children }) => {
               </div>
             </section>
             <section className="flex flex-wrap gap-4 justify-center sm:justify-start">
-              <Link href={artist.external_urls.spotify} className="text-sm hover:underline">
+              <Link
+                href={artist.external_urls.spotify}
+                className="text-sm bg-secondary-green border border-secondary-green hover:border-white py-1 px-2 rounded transition-colors"
+              >
                 Open In Spotify
               </Link>
             </section>
@@ -42,7 +49,7 @@ export const SkeletonArtistLayout = ({ children }) => {
     <div className="space-y-8 relative">
       <div className="primary-bg w-full rounded py-6 px-4 shadow">
         <div className="flex items-center gap-4 text-center md:text-left flex-wrap justify-center md:justify-start">
-          <div className="img-wrap full-round lg-img animate-pulse">
+          <div className="img-wrap rounded overflow-hidden lg-img animate-pulse">
             <Image src={undefined} width={200} height={200} alt={""} />
           </div>
           <div className="space-y-4 w-full max-w-sm">

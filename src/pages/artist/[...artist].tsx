@@ -21,7 +21,6 @@ const ArtistPage: NextPage<{
   related_artists: any;
 }> = (props) => {
   const router = useRouter();
-  const { status } = useSession();
   const { include_groups = "", album: albumId = undefined } = router.query;
   const { data: album } = useAlbum(albumId as string);
   const tabs = [
@@ -47,11 +46,6 @@ const ArtistPage: NextPage<{
     },
   ];
   const albumRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/");
-    }
-  }, [status]);
   const AlbumList = ({ albums }) => {
     if (!albums) return null;
     return (
@@ -96,7 +90,7 @@ const ArtistPage: NextPage<{
               swrKey={requests["artist"](artist.id)}
               className="flex items-center space-x-4 bg-hover p-1 rounded"
             >
-              <div className="img-wrap max-w-[40px] max-h-[40px] flex-grow shadow rounded-full overflow-hidden">
+              <div className="w-[40px] h-full flex-shrink-0 shadow rounded overflow-hidden">
                 <Image src={artist.images[0]?.url} width={50} height={50} alt={artist.name} />
               </div>
               <h3 className="truncate py-1 text-sm">{artist.name}</h3>
@@ -112,7 +106,7 @@ const ArtistPage: NextPage<{
       <ArtistLayout id={props.id}>
         <section className="grid grid-cols-6 gap-8">
           <div className="col-span-6 md:col-span-4 space-y-4">
-            <div className="flex space-x-4 border-b dark:border-secondary-green border-slate-200 overflow-y-hidden overflow-x-auto scrollbar-none">
+            <div className="flex space-x-4 border-b border-secondary-green overflow-y-hidden overflow-x-auto scrollbar-none">
               {tabs.map((tab) => (
                 <TabLink href={tab.href} key={tab.href}>
                   {tab.label}
@@ -144,7 +138,7 @@ const ArtistPage: NextPage<{
           </div>
           {props.type !== "related-artists" ? (
             <div className="col-span-2 space-y-4 hidden md:block">
-              <div className="border-b dark:border-secondary-green border-slate-200">
+              <div className="border-b border-secondary-green">
                 <div className="tab">Related Artists</div>
               </div>
               <RelatedArtistsList artists={props.related_artists.artists} />
@@ -160,14 +154,6 @@ export default ArtistPage;
 
 export const getServerSideProps: GetServerSideProps = async ({ req, query, res }) => {
   const session = await getSession({ req });
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
-    };
-  }
   const { artist, ...params } = query;
   const [id, type] = typeof artist === "string" ? [artist, "top-tracks"] : artist;
   const isAcceptedPath = ["top-tracks", "albums", "related-artists"].includes(type);

@@ -1,6 +1,5 @@
 import React, { ReactElement, ReactNode } from "react";
 import { AppProps } from "next/dist/shared/lib/router/router";
-import { ThemeProvider } from "next-themes";
 import "../styles/globals.scss";
 import { AudioTracker } from "../providers";
 import { SessionProvider } from "next-auth/react";
@@ -18,9 +17,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppPropsWith
   const getLayout = Component.getLayout || ((page) => page);
   return (
     <SessionProvider session={session}>
-      <AudioTracker>
-        <ThemeProvider attribute="class">{getLayout(<Component {...pageProps} />)}</ThemeProvider>
-      </AudioTracker>
+      <AudioTracker>{getLayout(<Component {...pageProps} />)}</AudioTracker>
     </SessionProvider>
   );
 }

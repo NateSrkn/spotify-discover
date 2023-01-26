@@ -1,6 +1,5 @@
 export * from "./Breadcrumb";
 export * from "./Button";
-export * from "./ThemeToggle";
 export * from "./ExpandableList";
 export * from "./Footer";
 export * from "./Header";

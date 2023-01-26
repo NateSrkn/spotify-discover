@@ -1,4 +1,4 @@
-import { signIn, getSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { Button, Layout } from "../components";
 export default function Home() {
   return (
@@ -15,24 +15,4 @@ export default function Home() {
       </div>
     </Layout>
   );
-}
-
-export async function getServerSideProps({ req }) {
-  const session = await getSession({ req });
-  if (session) {
-    return {
-      props: {
-        session,
-      },
-      redirect: {
-        destination: "/dashboard",
-        permanent: false,
-      },
-    };
-  }
-  return {
-    props: {
-      session,
-    },
-  };
 }

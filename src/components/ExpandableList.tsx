@@ -30,8 +30,7 @@ export const ListItem = ({
   return (
     <li
       className={cx("w-full", {
-        "my-2 hover:bg-gray-100 dark:hover:bg-green-custom p-1 cursor-pointer rounded-md transition-all":
-          onClick,
+        "my-2 hover:bg-green-custom p-1 cursor-pointer rounded-md transition-all": onClick,
         "my-3": !onClick,
         "bg-green-custom": isActive,
       })}

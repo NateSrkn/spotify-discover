@@ -13,7 +13,7 @@ class MyDocument extends Document {
           />
           <link href="https://api.fontshare.com/css?f[]=satoshi@1&display=swap" rel="stylesheet" />
         </Head>
-        <body className="bg-white dark:bg-dark text-black dark:text-white transition">
+        <body className="bg-dark text-white transition">
           <Main />
           <NextScript />
         </body>

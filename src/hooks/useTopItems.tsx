@@ -1,4 +1,3 @@
-import useSWRImmutable from "swr/immutable";
 import useSWRInfinite from "swr/infinite";
 import { fetcher } from "../util/api";
 import { requests } from "../util/helpers";

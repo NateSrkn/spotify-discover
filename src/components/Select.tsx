@@ -5,6 +5,7 @@ interface SelectProps {
   defaultValue?: { label: string; value: string };
   ariaLabel: string;
   value: string;
+  children: React.ReactNode;
 }
 
 export const Select: React.FC<SelectProps> = ({
@@ -30,7 +31,10 @@ export const Select: React.FC<SelectProps> = ({
             <FiChevronDown />
           </SelectPrimitive.Icon>
         </SelectPrimitive.Trigger>
-        <SelectPrimitive.Content className="dark:bg-primary-green bg-slate-200 p-1 w-max rounded shadow-lg flex flex-col items-start text-sm">
+        <SelectPrimitive.Content
+          className="bg-primary-green p-1 w-max rounded shadow-lg flex flex-col items-start text-sm z-10 border border-secondary-green"
+          position="popper"
+        >
           <SelectPrimitive.ScrollUpButton />
           <SelectPrimitive.Viewport>
             <SelectPrimitive.Group>{children}</SelectPrimitive.Group>

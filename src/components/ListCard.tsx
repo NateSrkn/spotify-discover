@@ -5,19 +5,19 @@ export const ListCard: React.FC<{
   subtitle: string | React.ReactNode;
 }> = ({ image, title, subtitle }) => {
   return (
-    <div className="flex items-center rounded overflow-hidden border border-slate-200 dark:border-primary-green gap-4 relative dark:hover:bg-primary-green hover:bg-slate-200 hover:scale-105 transition-all">
-      <div className="flex-shrink-0 p-2 dark:bg-primary-green bg-slate-200  w-full h-full max-w-[100px] max-h-[100px] sm:max-w-[125px] sm:max-h-[125px]">
+    <div className="flex items-center justify-between rounded overflow-hidden border border-primary-green gap-4 relative bg-primary-green transition-all group">
+      <div className="pr-2 flex-grow-0 truncate p-4">
+        <div className="font-bold truncate">{title}</div>
+        <div className="subtext truncate">{subtitle}</div>
+      </div>
+      <div className="flex-shrink-0 p-2  w-[100px] sm:w-[125px] h-full group-hover:scale-105 transition-transform">
         <Image
           src={image}
           height={500}
           width={500}
           alt={title}
-          className="rounded-full shadow-lg"
+          className="rounded shadow-lg aspect-square object-cover"
         />
-      </div>
-      <div className="pr-2 flex-grow-0 truncate">
-        <div className="font-bold truncate">{title}</div>
-        <div className="subtext truncate">{subtitle}</div>
       </div>
     </div>
   );
@@ -26,18 +26,18 @@ export const ListCard: React.FC<{
 export const SkeletonListCard = () => {
   return (
     <div className="flex items-center rounded overflow-hidden border primary-border gap-4 relative">
-      <div className="flex-shrink-0 p-2 primary-bg w-full h-full max-w-[100px] max-h-[100px] sm:max-w-[125px] sm:max-h-[125px] animate-pulse">
+      <div className="p-4 w-full space-y-2">
+        <div className="h-6 skeleton-text"></div>
+        <div className="h-5 skeleton-text"></div>
+      </div>
+      <div className="flex-shrink-0 p-2 w-[100px] sm:w-[125px] h-full animate-pulse">
         <Image
           src={undefined}
           height={100}
           width={100}
           alt={""}
-          className="rounded-full shadow-lg w-full"
+          className="rounded shadow-lg w-full"
         />
-      </div>
-      <div className="pr-2 w-full space-y-2">
-        <div className="h-6 skeleton-text"></div>
-        <div className="h-5 skeleton-text"></div>
       </div>
     </div>
   );

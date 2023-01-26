@@ -50,7 +50,7 @@ export const Album = ({ album }) => {
                 "col-span-full": album.total_tracks < 2,
               }
             )}
-            onClick={() => updateAudio(track)}
+            onClick={() => updateAudio({ ...track, album: { ...album, images: album.images } })}
           >
             <div className="text-xs subtext font-mono tabular-nums min-w-[16px] inline-block text-right">
               <span>{track.track_number}</span>

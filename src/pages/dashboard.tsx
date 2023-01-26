@@ -1,4 +1,3 @@
-import { getSession, useSession } from "next-auth/react";
 import { GetServerSideProps } from "next";
 import React, { useContext, useEffect, useState } from "react";
 import { toUppercase } from "../util/helpers";
@@ -15,7 +14,6 @@ export default function Dashboard({
   type = TypesList.ARTISTS,
   time_range = TermLengths.SHORT_TERM,
 }) {
-  const { status } = useSession();
   const { updateAudio } = useContext(AudioContext);
   const [options, setOptions] = useState<Options>({
     type,
@@ -33,12 +31,6 @@ export default function Dashboard({
     medium_term: "Last 6 Months",
     short_term: "Last Month",
   };
-
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/");
-    }
-  }, [status]);
 
   useEffect(() => {
     setOptions({ ...options, ...router.query });
@@ -86,13 +78,8 @@ export default function Dashboard({
           ))}
         </Select>
       </div>
-      <hr className="w-full border-1 dark:border-primary-green border-slate-200 mt-4 mb-4" />
-      <div
-        className="grid gap-4"
-        style={{
-          gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
-        }}
-      >
+      <hr className="w-full border-1 border-primary-green mt-4 mb-4" />
+      <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(350px,1fr))]">
         {data && data.length ? (
           data.map((page) =>
             page.items.map((item) =>
@@ -110,7 +97,7 @@ export default function Dashboard({
                     title={item.name}
                     subtitle={item.artists.map(({ name, id }, index) => (
                       <ArtistLink id={id} key={id} className="group">
-                        <span className="group-hover:underline">{name}</span>
+                        <span className="hover:underline">{name}</span>
                         {index !== item.artists.length - 1 ? ", " : ""}
                       </ArtistLink>
                     ))}
@@ -135,19 +122,9 @@ export default function Dashboard({
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ req, query, res }) => {
-  const session = await getSession({ req });
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
-    };
-  }
+export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   const type = (query.type as string) || "artists";
   const time_range = (query.time_range as string) || "short_term";
-
   return {
     props: {
       type,

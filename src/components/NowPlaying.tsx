@@ -21,9 +21,7 @@ export const NowPlaying = () => {
           ) : (
             <p>Not Playing</p>
           )}
-          <span className="mx-2 text-slate-200 dark:text-secondary-green hidden sm:block">
-            {" – "}
-          </span>
+          <span className="mx-2 text-secondary-green hidden sm:block">{" – "}</span>
           <p className="subtext max-w-max truncate">
             {isPlaying ? (
               now_playing.item.artists.map((a, index) => (

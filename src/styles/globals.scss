@@ -30,37 +30,37 @@
 
 @layer components {
   .subtext {
-    @apply text-gray-500 dark:text-pewter-blue text-sm;
+    @apply text-pewter-blue text-sm;
   }
   .button {
     @apply relative text-sm inline-flex items-center py-2 px-3 rounded;
   }
   .background-hover {
-    @apply dark:bg-secondary-green dark:bg-opacity-20 transition-all dark:hover:bg-opacity-100 bg-gray-100 hover:bg-opacity-50;
+    @apply bg-secondary-green bg-opacity-20 transition-all hover:bg-opacity-100;
   }
   .base-link {
     @apply text-gray-500 hover:text-gray-600 transition;
   }
   .bordered-item {
-    @apply border-gray-200 dark:border-gray-800;
+    @apply border-gray-800;
   }
   .primary-bg {
-    @apply bg-slate-200 dark:bg-primary-green;
+    @apply bg-primary-green;
   }
   .secondary-bg {
-    @apply bg-slate-100 dark:bg-secondary-green;
+    @apply bg-secondary-green;
   }
   .primary-border {
-    @apply border-slate-200 dark:border-primary-green;
+    @apply border-primary-green;
   }
   .secondary-border {
-    @apply border-slate-100 dark:border-secondary-green;
+    @apply border-secondary-green;
   }
   .bg-hover {
-    @apply hover:bg-slate-200 dark:hover:bg-primary-green transition-all;
+    @apply hover:bg-primary-green transition-all;
   }
   .bg-reverse-hover {
-    @apply hover:bg-slate-100 dark:hover:bg-secondary-green transition-all;
+    @apply hover:bg-secondary-green transition-all;
   }
   .title {
     @apply text-base truncate;
@@ -109,13 +109,12 @@
     position: sticky;
     z-index: 10;
     top: 0;
-    // @apply bg-white dark:bg-dark transition-all;
-    backdrop-filter: saturate(100%) blur(20px);
+    @apply bg-dark;
   }
   .tab {
     @apply pb-2 sm:flex-none whitespace-nowrap;
     &.active {
-      @apply border-b dark:border-slate-200 border-primary-green;
+      @apply border-b border-slate-200;
     }
   }
   button {
