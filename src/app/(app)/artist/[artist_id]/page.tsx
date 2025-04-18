@@ -23,19 +23,17 @@ export default async function RootArtistsPage({ params }) {
     <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
       {tracks.map((track) => (
         <Track.Root track={track} key={track.id}>
-          <Track.LinkToSpotify className="hover:text-spotify">
-            <li className="flex gap-2 items-center">
-              <Track.AlbumCover className="size-12" />
-              <div className="w-full truncate text-sm">
-                <Track.TrackName className="truncate font-medium" />
-                <Track.TrackArtists className="truncate text-pewter-blue" />
-              </div>
-              <div className="text-sm gap-2 flex">
-                <Track.PreviewButton className="text-white" />
-                {/*<Track.AddToPlaylistButton />*/}
-              </div>
-            </li>
-          </Track.LinkToSpotify>
+          <li className="flex gap-2 items-center">
+            <Track.AlbumCover className="size-12" />
+            <div className="w-full truncate text-sm">
+              <Track.TrackName className="truncate font-medium" />
+              <Track.TrackArtists className="truncate text-pewter-blue" />
+            </div>
+            <div className="text-sm gap-2 flex">
+              <Track.PreviewButton className="text-white" />
+              {/*<Track.AddToPlaylistButton />*/}
+            </div>
+          </li>
         </Track.Root>
       ))}
     </ul>
