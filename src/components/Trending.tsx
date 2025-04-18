@@ -97,7 +97,7 @@ export const List: React.FC<TrendingListProps> = () => {
                         .map((artist) => artist.name)
                         .join(", ")}
                       image={item.album.images[0]?.url}
-                      type="artist"
+                      type="track"
                     />
                   </Artist.ArtistLink>
                 </Artist.Root>
