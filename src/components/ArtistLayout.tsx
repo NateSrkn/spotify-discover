@@ -1,66 +1,60 @@
+"use client";
 import React from "react";
-import { useArtist } from "../hooks";
-import { Image } from "./Image";
-import { Link } from "./Link";
+import * as Artist from "@/components/Artist";
+import { button } from "@/components/Button";
 
-export const ArtistLayout: React.FC<{ id: string; children: React.ReactNode }> = ({
-  id,
-  children,
-}) => {
-  const { data: artist } = useArtist(id);
-  if (!artist) return <SkeletonArtistLayout>{children}</SkeletonArtistLayout>;
+import { ExternalLink } from "lucide-react";
+
+export const ArtistLayout: React.FC<{
+  artist: SpotifyApi.ArtistObjectFull;
+}> = ({ artist }) => {
+  const image = artist.images[0];
+  const linearGradient = `linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5))`;
+  const backgroundImage = image?.url ? `url(${image?.url})` : "none";
+  const followers = artist.followers.total.toLocaleString();
+
   return (
-    <div className="space-y-8 relative">
-      <div className="primary-bg w-full rounded py-6 px-4 shadow">
-        <div className="flex items-center gap-4 text-center md:text-left flex-wrap justify-center md:justify-start">
-          <div className="img-wrap rounded overflow-hidden lg-img">
-            <Image
-              src={artist.images[0]?.url}
-              width={200}
-              height={artist.images[0]?.height}
-              alt={artist.name}
-            />
-          </div>
-          <div className="space-y-4">
-            <section>
-              <h1 className="text-2xl font-bold truncate">{artist.name}</h1>
-              <div className="space-x-2 subtext">
-                {new Intl.ListFormat("en").format(artist.genres)}
+    <Artist.Root artist={artist}>
+      <div
+        className="w-full  h-[50vh] rounded-t-2xl overflow-hidden"
+        style={{
+          backgroundImage: `${linearGradient}, ${backgroundImage}`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div className="flex items-center gap-4 text-center md:text-left flex-wrap justify-center md:justify-start  py-6 px-4 ">
+          <div className="space-y-4 hidden md:block">
+            <section className="flex flex-col gap-4">
+              <Artist.Name className="text-6xl font-bold text-wrap" as="h2" />
+              <div className="flex flex-col gap-4">
+                <div>{followers} Followers</div>
+                <Artist.Genres />
               </div>
             </section>
-            <section className="flex flex-wrap gap-4 justify-center sm:justify-start">
-              <Link
-                href={artist.external_urls.spotify}
-                className="text-sm bg-secondary-green border border-secondary-green hover:border-white py-1 px-2 rounded transition-colors"
-              >
-                Open In Spotify
-              </Link>
-            </section>
           </div>
         </div>
       </div>
-      {children}
-    </div>
-  );
-};
+      <section className="flex flex-col gap-4 md:hidden py-6 px-4">
+        <Artist.Name className="text-3xl text-wrap font-bold" as="h2" />
+        <div className="flex items-center gap-4">
+          <div>{followers} Followers</div>
+          <Artist.Genres />
+        </div>
+      </section>
+      <section className="flex flex-wrap gap-2  justify-start  p-4">
+        <Artist.FollowButton />
 
-export const SkeletonArtistLayout = ({ children }) => {
-  return (
-    <div className="space-y-8 relative">
-      <div className="primary-bg w-full rounded py-6 px-4 shadow">
-        <div className="flex items-center gap-4 text-center md:text-left flex-wrap justify-center md:justify-start">
-          <div className="img-wrap rounded overflow-hidden lg-img animate-pulse">
-            <Image src={undefined} width={200} height={200} alt={""} />
-          </div>
-          <div className="space-y-4 w-full max-w-sm">
-            <section className="w-full space-y-2">
-              <div className="skeleton-text h-8" />
-              <div className="skeleton-text h-5" />
-            </section>
-          </div>
-        </div>
-      </div>
-      {children}
-    </div>
+        <Artist.SpotifyLink
+          className={button({
+            intent: "secondary",
+            className: "gap-2",
+          })}
+        >
+          <span>Open in Spotify</span>
+          <ExternalLink size={16} />
+        </Artist.SpotifyLink>
+      </section>
+    </Artist.Root>
   );
 };

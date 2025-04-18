@@ -1,0 +1,9 @@
+@import 'tailwindcss';
+
+@theme {
+    --color-surface-green: oklch(20.54% 0.0118 196.27);
+    --color-primary-green: oklch(26.74% 0.014 196.35);
+    --color-secondary-green: oklch(40.1% 0.0117 196.7);
+    --color-pewter-blue: oklch(69.27% 0.0386 239.43);
+    --color-spotify: oklch(0.77 0.2124 148.67);
+}

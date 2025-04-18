@@ -1,7 +1,8 @@
-import { pullInitials } from "../util/helpers";
-import classNames from "classnames";
+import cx from "classnames";
 import { HTMLAttributes } from "react";
 import NextImage from "next/image";
+import { MicVocal } from "lucide-react";
+
 export const Image: React.FC<{
   src: string;
   alt: string;
@@ -15,19 +16,25 @@ export const Image: React.FC<{
       alt={alt}
       height={height}
       width={width}
-      className={classNames("object-cover h-full max-w-full w-full aspect-square", className)}
+      className={cx(
+        "object-cover h-full max-w-full w-full aspect-square",
+        className,
+      )}
       style={{
         aspectRatio: `${width} / ${height}`,
       }}
     />
   ) : (
     <div
-      className={classNames("filler-img aspect-square object-cover", className)}
+      className={cx(
+        "filler-img aspect-square object-cover flex items-center justify-center w-full bg-pewter-blue",
+        className,
+      )}
       style={{
         aspectRatio: `${width} / ${height}`,
       }}
     >
-      {pullInitials(alt)}
+      <MicVocal />
     </div>
   );
 };

@@ -1,88 +1,181 @@
-import classNames from "classnames";
-import { useAudio } from "../providers";
-import { Image } from "./Image";
-import { Link } from "./Link";
-import { Skeleton } from "./Skeleton";
-import { SkeletonTrack, Track } from "./Track";
+"use client";
+import {
+  createContext,
+  ElementType,
+  FC,
+  HTMLAttributes,
+  PropsWithChildren,
+  use,
+} from "react";
+import { DynamicComponent, DynamicComponentProps } from "@/components/Dynamic";
+import cx from "classnames";
+import Link from "next/link";
+import dayjs from "dayjs";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { album_queries, artist_queries } from "@/hooks/spotify/queries";
+import * as Track from "@/components/Track";
 
-export const Album = ({ album }) => {
-  const { updateAudio } = useAudio();
-  let rowCount = Math.floor(album.total_tracks / 2);
-  if (album.total_tracks % 2) rowCount++;
-  if (!album) return <SkeletonAlbum />;
+type Album = SpotifyApi.AlbumObjectFull | SpotifyApi.AlbumObjectSimplified;
+type AlbumContextType =
+  | {
+      album: null;
+      type: null;
+    }
+  | {
+      album: SpotifyApi.AlbumObjectFull;
+      type: "full";
+    }
+  | {
+      album: SpotifyApi.AlbumObjectSimplified;
+      type: "simplified";
+    };
+
+const AlbumContext = createContext<AlbumContextType>({
+  album: null,
+  type: null,
+});
+
+export const Root: FC<
+  PropsWithChildren<{
+    album: Album;
+  }>
+> = ({ children, album }) => {
   return (
-    <div className="col-span-full mb-4 primary-bg rounded shadow p-4 space-y-4">
-      <div className="flex gap-4 justify-center items-center flex-wrap md:flex-nowrap w-full text-center sm:text-left">
-        <div className="img-wrap rounded shadow h-full w-[200px] overflow-hidden">
-          <Image
-            src={album.images[0].url}
-            width={album.images[0].width}
-            height={album.images[0].height}
-            alt={album.name}
-          />
-        </div>
-        <div className="flex flex-col w-full truncate">
-          <h4 className="truncate">{album.name}</h4>
-          <div className="subtext text-sm truncate">
-            {album.artists.map((artist, index) => (
-              <span key={artist.id}>
-                <Link href={`/artist/${artist.id}/top-tracks`} className="hover:underline truncate">
-                  {artist.name}
-                </Link>
-                <span className="truncate">{index < album.artists.length - 1 ? ", " : ""}</span>
-              </span>
-            ))}
+    <AlbumContext.Provider
+      value={{ album, type: assertFullAlbum(album) } as AlbumContextType}
+    >
+      {children}
+    </AlbumContext.Provider>
+  );
+};
+
+export const Title = <T extends ElementType>(
+  props: DynamicComponentProps<T>,
+) => {
+  const { album } = use(AlbumContext);
+  return <DynamicComponent {...props}>{album?.name}</DynamicComponent>;
+};
+
+export const ReleaseDate = (props: HTMLAttributes<HTMLSpanElement>) => {
+  const { album } = use(AlbumContext);
+  return (
+    <span {...props}>{dayjs(album?.release_date).format("MMMM DD, YYYY")}</span>
+  );
+};
+
+export const AlbumCover = (props: HTMLAttributes<HTMLImageElement>) => {
+  const { album } = use(AlbumContext);
+  const image = album?.images[0];
+  const { className, ...rest } = props;
+  return (
+    <img
+      alt={album?.name}
+      {...rest}
+      src={image.url}
+      width={image.width}
+      height={image.height}
+      className={cx("aspect-square", className)}
+    />
+  );
+};
+
+export const AlbumLink = (props: HTMLAttributes<HTMLAnchorElement>) => {
+  const { album } = use(AlbumContext);
+  return (
+    <Link
+      href={{
+        pathname: "./albums",
+        query: { album_id: album.id },
+      }}
+      {...props}
+    >
+      {props.children}
+    </Link>
+  );
+};
+
+export const Details = ({ album }: { album: SpotifyApi.AlbumObjectFull }) => {
+  const { data: tracks, status: tracks_status } = useInfiniteQuery(
+    album_queries.tracks(album?.id),
+  );
+
+  if (!album || tracks_status !== "success") {
+    return null;
+  }
+
+  return (
+    <Root album={album}>
+      <div className="flex flex-col gap-4 bg-secondary-green/40 p-4 rounded-xl">
+        <div className="flex gap-2 flex-col sm:flex-row">
+          <AlbumCover className={"w-full sm:size-64"} />
+          <div className="text-center sm:text-left">
+            <Title className="text-2xl font-bold" />
+            <p className="text-sm">
+              {album?.artists.map((artist) => artist.name).join(", ")}
+            </p>
+            <ReleaseDate className="text-sm" />
           </div>
         </div>
-      </div>
-      <div
-        className={`grid grid-cols-1 md:grid-cols-2 md:grid-flow-col truncate gap-x-4`}
-        style={{
-          gridTemplateRows: `repeat(${rowCount}, minmax(0, 1fr))`,
-        }}
-      >
-        {album.tracks?.items?.map((track) => (
-          <button
-            key={track.id}
-            className={classNames(
-              "flex w-full truncate p-1 bg-reverse-hover rounded items-center space-x-4 text-left",
-              {
-                "col-span-full": album.total_tracks < 2,
+        {tracks.pages.map((page) => {
+          let count = Math.floor(page.items.length / 2);
+          if (page.items.length % 2) {
+            count++;
+          }
+          return (
+            <ul
+              className={
+                "grid grid-cols-1 md:grid-cols-2 md:grid-flow-col gap-2"
               }
-            )}
-            onClick={() => updateAudio({ ...track, album: { ...album, images: album.images } })}
-          >
-            <div className="text-xs subtext font-mono tabular-nums min-w-[16px] inline-block text-right">
-              <span>{track.track_number}</span>
-            </div>
-            <Track track={track} />
-          </button>
-        ))}
+              key={page.href}
+              style={{
+                gridTemplateRows: `repeat(${count}, minmax(0, 1fr))`,
+              }}
+            >
+              {page.items.map((track) => (
+                <Track.Root track={track} key={track.id}>
+                  <li className="flex items-center justify-between gap-4 w-full">
+                    <div className="flex gap-3 items-center truncate">
+                      <Track.TrackNumber />
+                      <div className="truncate w-full text-sm">
+                        <Track.TrackName className="font-medium truncate" />
+                        <Track.TrackArtists className="text-pewter-blue truncate" />
+                      </div>
+                    </div>
+                    <div className="text-sm gap-2 flex">
+                      <Track.PreviewButton />
+                      <Track.AddToPlaylistButton />
+                    </div>
+                  </li>
+                </Track.Root>
+              ))}
+            </ul>
+          );
+        })}
       </div>
-    </div>
+    </Root>
   );
 };
 
-export const SkeletonAlbum = ({ trackCount = 10 }) => {
+export const List = ({ artist_id }) => {
+  const albums = useInfiniteQuery(artist_queries.albums(artist_id));
   return (
-    <div className="col-span-full mb-4 primary-bg rounded shadow p-4 space-y-4">
-      <div className="flex gap-4 justify-center items-center flex-wrap md:flex-nowrap w-full text-center sm:text-left">
-        <div className="img-wrap rounded shadow h-full w-[200px] overflow-hidden">
-          <Image src={undefined} width={200} height={200} alt={""} />
-        </div>
-        <div className="flex flex-col w-full gap-2">
-          <div className="skeleton-text h-7" />
-          <div className="skeleton-text" />
-        </div>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Skeleton count={trackCount} component={() => <SkeletonTrack hasImage />} />
-      </div>
-    </div>
+    <ul className="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-4">
+      {albums.data?.pages.map((page) =>
+        page.items.map((album) => (
+          <Root album={album} key={album.id}>
+            <AlbumLink className="self-stretch">
+              <li className="flex flex-col w-full gap-2">
+                <AlbumCover className="w-full rounded" />
+                <Title className="line-clamp-2" />
+              </li>
+            </AlbumLink>
+          </Root>
+        )),
+      )}
+    </ul>
   );
 };
 
-const formatDate = (date: string) => {
-  const [year, month, day] = date.split("-");
-  return `${month}/${day}/${year}`;
+const assertFullAlbum = (album: Album): album is SpotifyApi.AlbumObjectFull => {
+  return "tracks" in album;
 };

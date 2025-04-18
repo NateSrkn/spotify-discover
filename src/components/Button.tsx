@@ -1,36 +1,38 @@
-import React, { HTMLAttributes } from "react";
-import classNames from "classnames";
-interface IButton {
-  children: React.ReactNode;
-  action: () => void;
-  icon?: React.ElementType;
-  iconPosition?: "left" | "right";
-  className?: HTMLAttributes<HTMLButtonElement>["className"];
-  [key: string]: any;
-}
+"use client";
+import { HTMLAttributes } from "react";
+import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 
-export const Button = ({
-  children,
-  action,
-  icon: Icon,
-  iconPosition = "left",
-  className,
-  ...rest
-}: IButton) => {
-  const handleClick = (event) => {
-    event.stopPropagation();
-    action();
-  };
+export type ButtonVariantProps = VariantProps<typeof button>;
+export const button = cva(
+  "w-max cursor-pointer flex disabled:cursor-not-allowed items-center justify-center",
+  {
+    variants: {
+      intent: {
+        primary:
+          "bg-spotify/10 text-spotify/75 hover:text-spotify transition-all",
+        secondary:
+          "rounded-full border border-spotify/30 text-spotify hover:border-spotify transition-colors",
+      },
+      padding: {
+        true: "px-4 py-2 rounded-xl",
+        false: null,
+      },
+    },
+    defaultVariants: {
+      intent: "primary",
+      padding: true,
+    },
+  },
+);
 
+type ButtonProps = ButtonVariantProps & HTMLAttributes<HTMLButtonElement>;
+
+export const Button = (props: ButtonProps) => {
+  const { children, className, intent, padding, ...rest } = props;
   return (
-    <button
-      className={classNames("button background-hover w-max hover:scale-105", className)}
-      onClick={handleClick}
-      {...rest}
-    >
-      {Icon && iconPosition === "left" ? <Icon className="mr-1 text-xl" /> : null}
+    <button className={button({ intent, padding, className })} {...rest}>
       {children}
-      {Icon && iconPosition === "right" ? <Icon className="ml-1 text-xl" /> : null}
     </button>
   );
 };

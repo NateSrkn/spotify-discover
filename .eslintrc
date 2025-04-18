@@ -1,7 +1,0 @@
-{
-  "plugins": ["jsx-a11y"],
-  "extends": ["next", "next/core-web-vitals"],
-  "rules": {
-    "@next/next/no-img-element": "off"
-  }
-}
